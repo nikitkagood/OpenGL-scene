@@ -1,6 +1,8 @@
 Запуск либо через решение/проект Visual Studio,
 либо с помощью .exe в одной директории с папками Textures и Shaders.
 Он уже есть в папке bin/Win32/Release (MSVC).
+Зависимости проекта: см. Dependencies (glew, GLFW, glm, SOIL). В прикрепленном к github архиве то, чем пользуюсь я (Win32). 
+
 
 Управление: мышь, колесо мыши настраивает FOV, WASD и L_CTRL/SPACE для перемещения. ESC чтобы закрыть окно
 F - WireFrame рендеринг
