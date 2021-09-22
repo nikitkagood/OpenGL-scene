@@ -43,7 +43,8 @@ public:
 	const GLuint WIDTH, HEIGHT;
 	const unsigned _glfw_version;
 
-	Window(GLuint resolution_width, GLuint resolution_height, unsigned glfw_version) : WIDTH(resolution_width), HEIGHT(resolution_height), _glfw_version(glfw_version)
+	////4th OpenGL version, the latest; well it's the only one supported anyway
+	Window(GLuint resolution_width, GLuint resolution_height, unsigned glfw_version = 4) : WIDTH(resolution_width), HEIGHT(resolution_height), _glfw_version(glfw_version)
 	{
 		if (glfw_version < 3)
 		{
