@@ -26,6 +26,11 @@ Shader::~Shader()
 ShaderProgamSource Shader::ParseTwoShaders(const std::string& filepath)
 {
     std::ifstream stream(filepath);
+    if (stream.fail()) {
+        std::cerr << "ERROR: Could not open shader file" << std::endl;
+        throw std::runtime_error("Could not open shader file");
+        return {};
+    }
 
     enum class ShaderType
     {
@@ -205,10 +210,30 @@ unsigned Shader::GetUniformLocation(const std::string& name) //checks uniform lo
         if (location == -1)
         {
             std::cerr << "Warning: could not find uniform: " << name << std::endl;
-            std::cerr << "Compiler could cut it off if it's defined but not used" << std::endl;
         }
         else
         m_UniformLocationCache[name] = location;
+
+        return location;
+    }
+}
+
+unsigned Shader::GetUniformLocation(const std::string&& name) //checks uniform location in the cache
+{
+    if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
+    {
+        return m_UniformLocationCache[name];
+    }
+    else
+    {
+        GLCall(int location = glGetUniformLocation(m_ShaderID, name.c_str()));
+        if (location == -1)
+        {
+            std::cerr << "Warning: could not find uniform: " << name << std::endl;
+            std::cerr << "Compiler could cut it off if it's defined but not used" << std::endl;
+        }
+        else
+            m_UniformLocationCache[name] = location;
 
         return location;
     }
@@ -225,7 +250,6 @@ void Shader::SetUniform3f(const std::string& uniform_name, float v0, float v1, f
     GLCall(glUniform3f(GetUniformLocation(uniform_name), v0, v1, v2));
 }
 
-
 void Shader::SetUniform4f(const std::string& uniform_name, float v0, float v1, float v2, float v3)
 {
     GLCall(glUniform4f(GetUniformLocation(uniform_name), v0, v1, v2, v3));
@@ -236,3 +260,28 @@ void Shader::SetUniformMatrix4fv(const std::string& uniform_name, const glm::mat
     GLCall(glUniformMatrix4fv(GetUniformLocation(uniform_name), 1, GL_FALSE, glm::value_ptr(matrix)));
 }
 
+
+void Shader::SetUniform1f(const std::string&& uniform_name, float value)
+{
+    GLCall(glUniform1f(GetUniformLocation(uniform_name), value));
+}
+
+void Shader::SetUniform3f(const std::string&& uniform_name, float v0, float v1, float v2)
+{
+    GLCall(glUniform3f(GetUniformLocation(uniform_name), v0, v1, v2));
+}
+
+void Shader::SetUniform4f(const std::string&& uniform_name, float v0, float v1, float v2, float v3)
+{
+    GLCall(glUniform4f(GetUniformLocation(uniform_name), v0, v1, v2, v3));
+}
+
+void Shader::SetUniformMatrix4fv(const std::string&& uniform_name, const glm::mat4& matrix)
+{
+    GLCall(glUniformMatrix4fv(GetUniformLocation(uniform_name), 1, GL_FALSE, glm::value_ptr(matrix)));
+}
+
+void Shader::SetUniform1i(const std::string&& uniform_name, int value)
+{
+    GLCall(glUniform1i(GetUniformLocation(uniform_name), value));
+}

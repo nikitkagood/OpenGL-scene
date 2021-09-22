@@ -3,40 +3,49 @@
 #include<vector>
 #include"Renderer.h"
 
-struct VertexBufferElement
-{
-	unsigned type;
-	unsigned count;
-	unsigned char normalized;
-
-	//static unsigned GetSizeOfType(unsigned type) //I am not sure if this is needed
-	//{
-	//	switch (type)
-	//	{
-	//	case GL_FLOAT: return 4; //size of a type in bytes
-	//	case GL_UNSIGNED_INT: return 4;
-	//	case GL_UNSIGNED_BYTE: return 1;
-	//	}
-	//	ASSERT(false);
-
-	//	return 0;
-	//}
-};
-
 class VertexBufferLayout
 {
 private:
+	struct VertexBufferElement
+	{
+		unsigned type;
+		unsigned count;
+		unsigned char normalized;
+	};
+
 	std::vector<VertexBufferElement> m_Elements;
 	unsigned m_Stride = 0;
 public:
-	VertexBufferLayout(){}
+	VertexBufferLayout() 
+	{
+#ifdef DEBUG_MODE_ON
+		std::cerr << "VB Layout constructor" << std::endl;
+#endif // DEBUG_MODE_ON
+	}
 
-	//VertexBufferLayout(unsigned stride) : m_Stride(stride){}
+#ifdef COPY_CONSTRUCTORS_ON
+	VertexBufferLayout(const VertexBufferLayout& copy) : m_Elements(copy.m_Elements), m_Stride(copy.m_Stride)
+	{
+#ifdef DEBUG_MODE_ON
+		std::cerr << "VB Layout copy constructor" << std::endl;
+#endif // DEBUG_MODE_ON
+	}
+#else
+	//copy constructor; many OpenGL objects are unique, thus copying is forbidden
+	VertexBufferLayout(const VertexBufferLayout& copy) = delete;
+#endif // COPY_CONSTRUCTORS_ON
+
+	VertexBufferLayout(VertexBufferLayout&& moved) noexcept : m_Elements(std::move(moved.m_Elements)), m_Stride(std::move(moved.m_Stride))
+	{
+#ifdef DEBUG_MODE_ON
+		std::cerr << "VB Layout move constructor" << std::endl;
+#endif // DEBUG_MODE_ON
+	}
 
 	template<typename T>
 	void Push(unsigned count)
 	{
-		static_assert(false);
+		static_assert(false); //push without template argument is forbidden
 	}
 
 	template<>
@@ -44,7 +53,6 @@ public:
 	{
 		m_Elements.push_back({GL_FLOAT, count, GL_FALSE});
 		m_Stride += sizeof(GLfloat) * count;
-		//m_Stride += VertexBufferElement::GetSizeOfType(GL_FLOAT); //another way of doing it
 	}
 
 	template<>
