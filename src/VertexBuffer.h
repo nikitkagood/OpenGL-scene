@@ -1,13 +1,28 @@
 #pragma once
 
+#include "Settings.h"
+
+#include <stdint.h>
+
 class VertexBuffer
 {
 private:
 	const void* data_ptr;
-	unsigned vbo_id = 0; //internal OpenGL ID
-	unsigned _size; //how many vertices
+	unsigned vbo_buffer_id = 0; //internal OpenGL ID
+	unsigned size; //how many vertices
 public:
-	VertexBuffer(const void* data, unsigned size);
+	//NOTE: to get size of all elements in container you must do: container.size() * sizeof(Type)
+	VertexBuffer(const void* data, uint64_t size_in_bytes);
+#ifdef COPY_CONSTRUCTORS_ON
+	VertexBuffer(const VertexBuffer& copy);
+#else
+	//copy constructor; many OpenGL objects are unique, thus copying is forbidden
+	VertexBuffer(const VertexBuffer& copy) = delete;
+#endif // COPY_CONSTRUCTOR_ON
+
+	//move constructor
+	VertexBuffer(VertexBuffer&& moved) noexcept;
+
 	~VertexBuffer();
 
 	void SetBufferData();
@@ -15,4 +30,6 @@ public:
 	void Bind() const;
 	void Unbind() const;
 	unsigned Size() const;
+
+	void Clear();
 };

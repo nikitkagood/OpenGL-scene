@@ -29,6 +29,7 @@ private:
 	unsigned CreateProgram(const std::string& vertexShader, const std::string& fragmentShader);
 
 	unsigned GetUniformLocation(const std::string& name); //checks uniform location in the cache
+	unsigned GetUniformLocation(const std::string&& name); //checks uniform location in the cache
 	std::unordered_map<std::string, int> m_UniformLocationCache;
 	
 public:
@@ -41,9 +42,19 @@ public:
 	
 	unsigned GetID() const;
 
-	void SetUniform1f(const std::string& name, float value);
+	void SetUniform1f(const std::string& uniform_name, float value);
 	void SetUniform3f(const std::string& uniform_name, float v0, float v1, float v2);
 	void SetUniform4f(const std::string& uniform_name, float v0, float v1, float v2, float v3);
-
 	void SetUniformMatrix4fv(const std::string& uniform_name, const glm::mat4& matrix);
+
+	//string argument move semantics
+	//floats
+	void SetUniform1f(const std::string&& uniform_name, float value);
+	void SetUniform3f(const std::string&& uniform_name, float v0, float v1, float v2);
+	void SetUniform4f(const std::string&& uniform_name, float v0, float v1, float v2, float v3);
+	void SetUniformMatrix4fv(const std::string&& uniform_name, const glm::mat4& matrix);
+	//ints
+	void SetUniform1i(const std::string&& uniform_name, int value);
+
+	
 };
