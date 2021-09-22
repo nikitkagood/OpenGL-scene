@@ -18,6 +18,7 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include <functional>
 
 #include "Renderer.h"
 #include "VertexBuffer.h"
@@ -26,19 +27,21 @@
 #include "VertexArray.h"
 #include "Material.h"
 #include "Shader.h"
+#include "Camera.h"
 #include "Light.h"
 #include "Window.h"
-#include "Model.h" //Icludes: Assimp, SOIL
+#include "Model.h" //icludes: Assimp, SOIL
 
 #include "Profiler.h"
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 bool keys[1024];
 
-#include "Camera.h"
-
-//not just camera
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
+Renderer renderer;
+Window window(WIDTH, HEIGHT); 
+Camera camera1(window, keys);
 
 int main()
 {
@@ -50,14 +53,8 @@ int main()
 
     glEnable(GL_DEBUG_OUTPUT);
 
-    Renderer renderer;
-
-    Window window(WIDTH, HEIGHT, 4);
-
     //Set the required callback functions
     window.SetKeyCallback(key_callback);
-    window.SetCursorPosCallback(mouse_callback);
-    window.SetScrollCallback(scroll_callback);
 
     //Define the viewport dimensions
     int vieport_width, vieport_height;
@@ -139,7 +136,7 @@ int main()
         glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
         //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
         Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, cameraFront, 12.0f, 14.0f);
+        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
 
         //for IBO/EBO
         //2 triangles -> square (that looks like rectangle)
@@ -189,10 +186,10 @@ while (!glfwWindowShouldClose(window.Get()))
 {
     //delta time calculation
     GLdouble currentFrame = glfwGetTime();
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
+    camera1.deltaTime = currentFrame - camera1.lastFrame;
+    camera1.lastFrame = currentFrame;
 
-    camera_movement();
+    camera1.ProcessKeyboard();
 
     //clearing buffers for each frame to display things correctly
     renderer.GLClear();
@@ -200,8 +197,8 @@ while (!glfwWindowShouldClose(window.Get()))
     //CAMERA
     glm::mat4 view(1.0f);
     glm::mat4 projection(1.0f);
-    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-    projection = glm::perspective(glm::radians(FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
+    projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
      //LIGHTING
     shader_lighting.Bind();
@@ -288,18 +285,26 @@ while (!glfwWindowShouldClose(window.Get()))
     return 0;
 }
 
+void mouse_callback(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
+{
+    camera1.ProcessMouse(window, xpos, ypos);
+}
+void scroll_callback(GLFWwindow* window, GLdouble xoffset, GLdouble yoffset)
+{
+    camera1.ProcesMouseScroll(window, xoffset, yoffset);
+}
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-    //keys that don't belong to camera movement
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    if (key == GLFW_KEY_F && action == GLFW_PRESS)
-        //renderer.ToggleWireFrameMode();
-        Renderer::ToggleWireFrameMode();
-
     //for multiple keys pressed at the same time
     if (action == GLFW_PRESS)
         keys[key] = true;
     else if (action == GLFW_RELEASE)
         keys[key] = false;
+
+    if (keys[GLFW_KEY_ESCAPE])
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    if (keys[GLFW_KEY_F])
+        Renderer::ToggleWireFrameMode();
+
 }
