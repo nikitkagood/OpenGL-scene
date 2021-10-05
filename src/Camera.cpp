@@ -1,11 +1,21 @@
-/*
-//CLASS PROTOTYPE
-
 #include "Camera.h"
 
-void Camera::camera_movement()
+Camera::Camera(Window& window, bool keys_array[]) : current_window(window), keys(keys_array)
 {
-    GLfloat cameraSpeed = 5.0f * deltaTime;
+    window.SetCursorPosCallback(mouse_callback);
+    window.SetScrollCallback(scroll_callback);
+}
+
+void Camera::CalculateDeltaTime()
+{
+    GLdouble currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+}
+
+void Camera::ProcessKeyboard() //it's NOT a callback, this function just checks keys[]; and keys[] itself is set by callback function in main
+{
+    GLfloat cameraSpeed = camera_speed_multiplier * deltaTime;
     if (keys[GLFW_KEY_W])
         cameraPos += cameraFront * cameraSpeed;
     if (keys[GLFW_KEY_S])
@@ -20,7 +30,7 @@ void Camera::camera_movement()
         cameraPos -= cameraUp * cameraSpeed;
 }
 
-void Camera::mouse_callback(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
+void Camera::ProcessMouse(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
 {
     if (firstMouse)
     {
@@ -34,9 +44,8 @@ void Camera::mouse_callback(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
     lastX = xpos;
     lastY = ypos;
 
-    GLdouble sensitivity = 0.1;	// Change this value to your liking
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
+    xoffset *= camera_sensitivity_multiplier;
+    yoffset *= camera_sensitivity_multiplier;
 
     yaw += xoffset;
     pitch += yoffset;
@@ -54,15 +63,13 @@ void Camera::mouse_callback(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
     cameraFront = glm::normalize(front);
 }
 
-void Camera::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void Camera::ProcessMouseScroll(GLFWwindow* window, GLdouble xoffset, GLdouble yoffset)
 {
     GLfloat sensitivity = 1.5f;
-    GLfloat min_fov = 1.0f;
+    GLfloat min_fov = 5.0f;
     GLfloat max_fov = 75.0f;
 
     if (FOV >= min_fov && FOV <= max_fov) FOV -= yoffset * sensitivity;
     if (FOV <= min_fov) FOV = min_fov;
     if (FOV >= max_fov) FOV = max_fov;
 }
-
-*/

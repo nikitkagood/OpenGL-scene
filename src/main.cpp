@@ -4,14 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//#include <SOIL/SOIL.h> //Simple OpenGL Image Library; included in Model
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-//#include <assimp/Importer.hpp>
-//#include <assimp/scene.h>
-//#include <assimp/postprocess.h>
 
 #include <string>
 #include <iostream>
@@ -35,15 +29,13 @@
 #include "Profiler.h"
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
-bool keys[1024];
+bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 Renderer renderer;
 #include "Camera.h"
 Window window(WIDTH, HEIGHT); 
-
-
 Camera camera1(window, keys);
 
 int main()
