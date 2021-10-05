@@ -5,16 +5,20 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-class Window
+class Window //singleton - only one object can be created
 {
 public:
 	const GLuint WIDTH, HEIGHT;
 	const unsigned opengl_version = 4; //latest; there is no need for any lower version 
+	static Window* instance;
 
-	Window(GLuint resolution_width, GLuint resolution_height) : WIDTH(resolution_width), HEIGHT(resolution_height)
-	{
-		Init();
-	}
+	//static Window* Instance(GLuint resolution_width, GLuint resolution_height)
+	//{
+	//	if (instance == nullptr)
+	//	{
+	//		instance 
+	//	}
+	//}
 
 	GLFWwindow* Get() const
 	{
@@ -34,6 +38,11 @@ public:
 	void SetScrollCallback(GLFWscrollfun callback_func)
 	{
 		glfwSetScrollCallback(glfw_window, callback_func);
+	}
+protected:
+	Window(GLuint resolution_width, GLuint resolution_height) : WIDTH(resolution_width), HEIGHT(resolution_height)
+	{
+		Init();
 	}
 private:
 	GLFWwindow* glfw_window = nullptr;
