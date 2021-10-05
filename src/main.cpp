@@ -4,14 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//#include <SOIL/SOIL.h> //Simple OpenGL Image Library; included in Model
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-//#include <assimp/Importer.hpp>
-//#include <assimp/scene.h>
-//#include <assimp/postprocess.h>
 
 #include <string>
 #include <iostream>
@@ -42,8 +36,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 Renderer renderer;
 #include "Camera.h"
 Window window(WIDTH, HEIGHT); 
-
-
 Camera camera1(window, keys);
 
 int main()
