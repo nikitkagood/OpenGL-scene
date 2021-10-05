@@ -177,6 +177,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="assimp-vc142-mt.dll" />
     <None Include="Shaders\Basic_Model.glsl" />
     <None Include="Shaders\Combined_Lighting.glsl" />
     <None Include="Shaders\Point_Lighting.glsl">
@@ -191,6 +192,7 @@
     <ClCompile Include="src\VertexArray.cpp" />
     <ClCompile Include="src\VertexBuffer.cpp" />
     <None Include="Shaders\Spotlight_Lighting.glsl" />
+    <None Include="zlib.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Lighting.glsl" />
