@@ -15,15 +15,15 @@
 #include <functional>
 
 #include "Renderer.h"
+#include "Window.h"
+#include "Camera.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Material.h"
 #include "Shader.h"
-
 #include "Light.h"
-#include "Window.h"
 #include "Model.h" //icludes: Assimp, SOIL
 
 #include "Profiler.h"
@@ -34,7 +34,7 @@ bool keys[1024]; //contains statuses if pressed for all the keys; used to implem
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 Renderer renderer;
-#include "Camera.h"
+
 Window window(WIDTH, HEIGHT); 
 Camera camera1(window, keys);
 
