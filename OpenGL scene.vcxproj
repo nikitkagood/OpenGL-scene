@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Window.cpp" />
     <None Include=".gitignore" />
     <None Include="assimp-vc142-mt.dll" />
     <None Include="Shaders\Basic_Model.glsl" />
