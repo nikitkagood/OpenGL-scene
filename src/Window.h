@@ -7,8 +7,36 @@
 
 class Window
 {
+public:
+	const GLuint WIDTH, HEIGHT;
+	const unsigned opengl_version = 4; //latest; there is no need for any lower version 
+
+	Window(GLuint resolution_width, GLuint resolution_height) : WIDTH(resolution_width), HEIGHT(resolution_height)
+	{
+		Init();
+	}
+
+	GLFWwindow* Get() const
+	{
+		return glfw_window;
+	}
+
+	void SetKeyCallback(GLFWkeyfun callback_func)
+	{
+		glfwSetKeyCallback(glfw_window, callback_func);
+	}
+
+	void SetCursorPosCallback(GLFWcursorposfun callback_func)
+	{
+		glfwSetCursorPosCallback(glfw_window, callback_func);
+	}
+
+	void SetScrollCallback(GLFWscrollfun callback_func)
+	{
+		glfwSetScrollCallback(glfw_window, callback_func);
+	}
 private:
-	GLFWwindow* window = nullptr;
+	GLFWwindow* glfw_window = nullptr;
 
 	void Init()
 	{
@@ -17,61 +45,27 @@ private:
 			throw std::runtime_error("glfwInit failed");
 		}
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, _glfw_version);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, _glfw_version);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, opengl_version);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, opengl_version);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL scene", NULL, NULL);
+		glfw_window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL scene", NULL, NULL);
 
-		if (!window)
+		if (!glfw_window)
 		{
 			glfwTerminate();
 			throw std::runtime_error("Failed to create window");
 		}
 
-		glfwMakeContextCurrent(window);
+		glfwMakeContextCurrent(glfw_window);
 
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetInputMode(glfw_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		if (glewInit() != GLEW_OK) //glewInit must be after a vaolid openGL context
 		{
 			throw std::runtime_error("glewInit failed");
 		}
 	}
-
-public:
-	const GLuint WIDTH, HEIGHT;
-	const unsigned _glfw_version;
-
-	////4th OpenGL version, the latest; well it's the only one supported anyway
-	Window(GLuint resolution_width, GLuint resolution_height, unsigned glfw_version = 4) : WIDTH(resolution_width), HEIGHT(resolution_height), _glfw_version(glfw_version)
-	{
-		if (glfw_version < 3)
-		{
-			throw std::invalid_argument("Minimal version is 3");
-		}
-
-		Init();
-	}
-
-	GLFWwindow* Get() const
-	{
-		return window;
-	}
-
-	void SetKeyCallback(GLFWkeyfun callback_func)
-	{
-		glfwSetKeyCallback(window, callback_func);
-	}
-
-	void SetCursorPosCallback(GLFWcursorposfun callback_func)
-	{
-		glfwSetCursorPosCallback(window, callback_func);
-	}
-
-	void SetScrollCallback(GLFWscrollfun callback_func)
-	{
-		glfwSetScrollCallback(window, callback_func);
-	}
+	
 };
 

@@ -34,7 +34,6 @@ bool keys[1024]; //contains statuses if pressed for all the keys; used to implem
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 Renderer renderer;
-
 Window window(WIDTH, HEIGHT); 
 Camera camera1(window, keys);
 
@@ -60,6 +59,7 @@ int main()
 
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
+        //for cube model without IBO, each 6 lines means one side of 2 triangles
         array<float, 288> vertices = {
             // positions          // normals                // texture coords
             -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
