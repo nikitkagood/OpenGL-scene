@@ -34,8 +34,8 @@ bool keys[1024]; //contains statuses if pressed for all the keys; used to implem
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
 Renderer renderer;
-Window window(WIDTH, HEIGHT); 
-Camera camera1(window, keys);
+Window* window = Window::CreateInstance(WIDTH, HEIGHT);
+Camera camera1(*window, keys);
 
 int main()
 {
@@ -48,11 +48,11 @@ int main()
     glEnable(GL_DEBUG_OUTPUT);
 
     //Set the required callback functions
-    window.SetKeyCallback(key_callback);
+    window->SetKeyCallback(key_callback);
 
     //Define the viewport dimensions
     int vieport_width, vieport_height;
-    glfwGetFramebufferSize(window.Get(), &vieport_width, &vieport_height);
+    glfwGetFramebufferSize(window->Get(), &vieport_width, &vieport_height);
     glViewport(0, 0, vieport_width, vieport_height);
 
     cout << glGetString(GL_VERSION) << endl;
@@ -172,7 +172,7 @@ int main()
 
         glEnable(GL_DEPTH_TEST);
 
-while (!glfwWindowShouldClose(window.Get()))
+while (!glfwWindowShouldClose(window->Get()))
 {
     //delta time calculation
     GLdouble currentFrame = glfwGetTime();
@@ -257,7 +257,7 @@ while (!glfwWindowShouldClose(window.Get()))
 
 
     //Swap front and back buffers
-    glfwSwapBuffers(window.Get());
+    glfwSwapBuffers(window->Get());
 
     //Sync with refresh rate
     //Renderer::VSync(true);

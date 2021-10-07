@@ -8,17 +8,13 @@
 class Window //singleton - only one object can be created
 {
 public:
-	const GLuint WIDTH, HEIGHT;
-	const unsigned opengl_version = 4; //latest; there is no need for any lower version 
-	static Window* instance;
+	const GLuint WIDTH, HEIGHT; //for now they are intended to be unchangealbe
+	const unsigned OPENGL_VERSION = 4; //latest; there is no need for any lower version 
 
-	//static Window* Instance(GLuint resolution_width, GLuint resolution_height)
-	//{
-	//	if (instance == nullptr)
-	//	{
-	//		instance 
-	//	}
-	//}
+	Window(const Window&) = delete;
+	Window(Window&&) = delete;
+
+	static Window* CreateInstance(GLuint resolution_width, GLuint resolution_height);
 
 	GLFWwindow* Get() const
 	{
@@ -40,6 +36,8 @@ public:
 		glfwSetScrollCallback(glfw_window, callback_func);
 	}
 protected:
+	inline static Window* instance;
+
 	Window(GLuint resolution_width, GLuint resolution_height) : WIDTH(resolution_width), HEIGHT(resolution_height)
 	{
 		Init();
@@ -54,8 +52,8 @@ private:
 			throw std::runtime_error("glfwInit failed");
 		}
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, opengl_version);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, opengl_version);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_VERSION);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_VERSION);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		glfw_window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL scene", NULL, NULL);
@@ -77,4 +75,5 @@ private:
 	}
 	
 };
+
 
