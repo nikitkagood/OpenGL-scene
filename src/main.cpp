@@ -63,44 +63,44 @@ int main()
         array<float, 288> vertices = {
             // positions          // normals                // texture coords
             -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
+            0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
             -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
             -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-                                                           
+
             -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
             -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
             -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-                                                           
+
             -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
             -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
             -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
             -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
             -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
             -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
+
+            0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+
             -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
             -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
             -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-                                                           
+
             -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
             -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
             -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
         };
@@ -172,102 +172,102 @@ int main()
 
         glEnable(GL_DEPTH_TEST);
 
-while (!glfwWindowShouldClose(window->Get()))
-{
-    //delta time calculation
-    GLdouble currentFrame = glfwGetTime();
-    camera1.deltaTime = currentFrame - camera1.lastFrame;
-    camera1.lastFrame = currentFrame;
+        while (!glfwWindowShouldClose(window->Get()))
+        {
+            //delta time calculation
+            GLdouble currentFrame = glfwGetTime();
+            camera1.deltaTime = currentFrame - camera1.lastFrame;
+            camera1.lastFrame = currentFrame;
 
-    camera1.ProcessKeyboard();
+            camera1.ProcessKeyboard();
 
-    //clearing buffers for each frame to display things correctly
-    renderer.GLClear();
+            //clearing buffers for each frame to display things correctly
+            renderer.GLClear();
 
-    //CAMERA
-    glm::mat4 view(1.0f);
-    glm::mat4 projection(1.0f);
-    view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
-    projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+            //CAMERA
+            glm::mat4 view(1.0f);
+            glm::mat4 projection(1.0f);
+            view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
+            projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
-     //LIGHTING
-    shader_lighting.Bind();
+            //LIGHTING
+            shader_lighting.Bind();
 
-    //unsigned idx = 0;
-    //for (auto& i : light_point_pool) 
-    //{
-    //    i.UseMany(shader, idx);
-    //    idx++;
-    //}
+            //unsigned idx = 0;
+            //for (auto& i : light_point_pool) 
+            //{
+            //    i.UseMany(shader, idx);
+            //    idx++;
+            //}
 
-    shader_lighting.SetUniformMatrix4fv("view", view);
-    shader_lighting.SetUniformMatrix4fv("projection", projection);
+            shader_lighting.SetUniformMatrix4fv("view", view);
+            shader_lighting.SetUniformMatrix4fv("projection", projection);
 
-    material1.Use(shader_lighting);
-    light_spotlight.Use(shader_lighting);
+            material1.Use(shader_lighting);
+            light_spotlight.Use(shader_lighting);
 
-    //MODELS
-    shader_basic_model.Bind();
+            //MODELS
+            shader_basic_model.Bind();
 
-    shader_basic_model.SetUniformMatrix4fv("view", view);
-    shader_basic_model.SetUniformMatrix4fv("projection", projection);
+            shader_basic_model.SetUniformMatrix4fv("view", view);
+            shader_basic_model.SetUniformMatrix4fv("projection", projection);
 
-    //DRAW CALLS START HERE
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //0.2f, 0.3f, 0.3f, 1.0f - dark green-blue color
+            //DRAW CALLS START HERE
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //0.2f, 0.3f, 0.3f, 1.0f - dark green-blue color
 
-    glm::mat4 matrix_model1(1.0f);
-    matrix_model1 = glm::translate(matrix_model1, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.5f));	// for backpack
-    //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.05f, 0.05f, 0.05f));	// for table
-    //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.005f, 0.005f, 0.005f));	// for street light
-    shader_basic_model.SetUniformMatrix4fv("model", matrix_model1);
-    model1.Draw(shader_basic_model);
-    //model1.Draw(shader_lighting);
+            glm::mat4 matrix_model1(1.0f);
+            matrix_model1 = glm::translate(matrix_model1, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.5f));	// for backpack
+                                                                        //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.05f, 0.05f, 0.05f));	// for table
+                                                                        //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.005f, 0.005f, 0.005f));	// for street light
+            shader_basic_model.SetUniformMatrix4fv("model", matrix_model1);
+            model1.Draw(shader_basic_model);
+            //model1.Draw(shader_lighting);
 
-    //lamp cube
-    shader_lightsource.Bind();
-    shader_lightsource.SetUniformMatrix4fv("view", view);
-    shader_lightsource.SetUniformMatrix4fv("projection", projection);
+            //lamp cube
+            shader_lightsource.Bind();
+            shader_lightsource.SetUniformMatrix4fv("view", view);
+            shader_lightsource.SetUniformMatrix4fv("projection", projection);
 
-    float rotation_radius = 1.5f; 
-    lightPos.x = sin(glfwGetTime()) * rotation_radius;
-    lightPos.z = cos(glfwGetTime()) * rotation_radius;
+            float rotation_radius = 1.5f; 
+            lightPos.x = sin(glfwGetTime()) * rotation_radius;
+            lightPos.z = cos(glfwGetTime()) * rotation_radius;
 
-    glm::mat4 model_lamp_cube(1.0f);
-    model_lamp_cube = glm::translate(model_lamp_cube, lightPos);
-    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
+            glm::mat4 model_lamp_cube(1.0f);
+            model_lamp_cube = glm::translate(model_lamp_cube, lightPos);
+            model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
+            shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
 
-    renderer.DrawArrays(vao_lightsource, shader_lightsource, 36);
-    //vao_lightsource.Unbind();
-    
-    //for (size_t i = 0; i < 4; i++)
-    //{
-    //    glm::mat4 model_lamp_cube(1.0f);
+            renderer.DrawArrays(vao_lightsource, shader_lightsource, 36);
+            //vao_lightsource.Unbind();
 
-    //    model_lamp_cube = glm::translate(model_lamp_cube, pointLightPositions[i]);
-    //    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-    //    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
+            //for (size_t i = 0; i < 4; i++)
+            //{
+            //    glm::mat4 model_lamp_cube(1.0f);
 
-    //    renderer.DrawArrays(vao, shader_lighting, 36);
-    //}
+            //    model_lamp_cube = glm::translate(model_lamp_cube, pointLightPositions[i]);
+            //    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
+            //    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
 
-    //vao.Unbind();
+            //    renderer.DrawArrays(vao, shader_lighting, 36);
+            //}
+
+            //vao.Unbind();
 
 
-    //Swap front and back buffers
-    glfwSwapBuffers(window->Get());
+            //Swap front and back buffers
+            glfwSwapBuffers(window->Get());
 
-    //Sync with refresh rate
-    //Renderer::VSync(true);
+            //Sync with refresh rate
+            //Renderer::VSync(true);
 
-    glfwPollEvents();
+            glfwPollEvents();
 
 #ifdef BENCHMARK_MODE_ON
-    break;
+            break;
 #endif // BENCHMARK_MODE_ON
-}
+        }
 
     }
     glfwTerminate();

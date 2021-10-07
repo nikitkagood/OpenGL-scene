@@ -73,7 +73,7 @@ private:
 			throw std::runtime_error("glewInit failed");
 		}
 	}
-	
+
 };
 
 
