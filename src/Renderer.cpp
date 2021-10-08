@@ -9,6 +9,8 @@ bool keys[]; //forward declaration
 
 using namespace std;
 
+bool Renderer::wire_frame_mode = false;
+
 void GLClearError()
 {
     while (glGetError() != GL_NO_ERROR) {}
@@ -26,12 +28,12 @@ bool GLLogCall(const char* function, const char* file, int line)
     return true;
 }
 
-void Renderer::GLClear() const
+void Renderer::GLClear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const
+void Renderer::DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) 
 {
     shader.Bind();
     vao.Bind();
@@ -40,7 +42,7 @@ void Renderer::DrawElements(const VertexArray& vao, const IndexBuffer& ibo, cons
     GLCall(glDrawElements(GL_TRIANGLES, ibo.GetCount(), GL_UNSIGNED_INT, nullptr)); //nullptr because we have nothing to bind
 }
 
-void Renderer::DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices) const
+void Renderer::DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices) 
 {
     shader.Bind();
     vao.Bind();
@@ -48,9 +50,6 @@ void Renderer::DrawArrays(const VertexArray& vao, const Shader& shader, unsigned
     GLCall(glDrawArrays(GL_TRIANGLES, 0, vertices)); 
 
 }
-
-
-bool Renderer::wire_frame_mode = false;
 
 void Renderer::ToggleWireFrameMode()
 {

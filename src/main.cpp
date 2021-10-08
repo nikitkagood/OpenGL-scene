@@ -33,14 +33,14 @@ bool keys[1024]; //contains statuses if pressed for all the keys; used to implem
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-Renderer renderer;
+//Renderer renderer;
 Window* window = Window::CreateInstance(WIDTH, HEIGHT);
 Camera camera1(*window, keys);
 
 int main()
 {
 #ifdef BENCHMARK_MODE_ON
-    LOG_DURATION("BENCHMARK: main, 1 game cycle iteration");
+    LOG_DURATION("BENCHMARK: main, 1 game loop iteration");
 #endif // BENCHMARK_MODE_ON
 
     using namespace std;
@@ -182,7 +182,7 @@ int main()
             camera1.ProcessKeyboard();
 
             //clearing buffers for each frame to display things correctly
-            renderer.GLClear();
+            Renderer::GLClear();
 
             //CAMERA
             glm::mat4 view(1.0f);
@@ -239,7 +239,7 @@ int main()
             model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
             shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
 
-            renderer.DrawArrays(vao_lightsource, shader_lightsource, 36);
+            Renderer::DrawArrays(vao_lightsource, shader_lightsource, 36);
             //vao_lightsource.Unbind();
 
             //for (size_t i = 0; i < 4; i++)

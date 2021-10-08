@@ -22,14 +22,17 @@ bool GLLogCall(const char* function, const char* file, int line);
 
 class Renderer
 {
-private:
-    static bool wire_frame_mode;
 public:
-    void GLClear() const;
+    static void GLClear();
 
-    void DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
-    void DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices) const;
+    static void DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader);
+    static void DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices);
 
     static void ToggleWireFrameMode();
     static void VSync(bool value);
+
+private:
+    Renderer() = delete;
+
+    static bool wire_frame_mode;
 };
