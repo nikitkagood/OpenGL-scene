@@ -23,6 +23,19 @@ public:
 #endif // DEBUG_MODE_ON
 	}
 
+	template<typename T>
+	VertexBufferLayout(std::initializer_list<T> init_list) 
+	{
+#ifdef DEBUG_MODE_ON
+		std::cerr << "VB Layout constructor(initializer_list)" << std::endl;
+#endif // DEBUG_MODE_ON
+
+		for(auto& i : init_list)
+		{
+			Push<T>(i);
+		}
+	}
+
 #ifdef COPY_CONSTRUCTORS_ON
 	VertexBufferLayout(const VertexBufferLayout& copy) : m_Elements(copy.m_Elements), m_Stride(copy.m_Stride)
 	{

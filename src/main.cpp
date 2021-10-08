@@ -143,10 +143,12 @@ int main()
         vbo.Bind();
         vbo.SetBufferData();
 
-        VertexBufferLayout layout;
-        layout.Push<float>(3);
-        layout.Push<float>(3);
-        layout.Push<float>(2);
+        //VertexBufferLayout layout;
+        //layout.Push<float>(3);
+        //layout.Push<float>(3);
+        //layout.Push<float>(2);
+
+        VertexBufferLayout layout{ (float)3, (float)3, (float)2 };
 
         vao.AddBuffer(vbo, layout);
 
