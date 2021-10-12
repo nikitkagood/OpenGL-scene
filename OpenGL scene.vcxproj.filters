@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\IndexBuffer.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexArray.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VertexBuffer.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Window.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexBuffer.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Material.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Profiler.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Settings.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexArray.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBuffer.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VertexBufferLayout.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Source files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Optional\KHR_Debug.h">
+      <Filter>Source files\Optional</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Old\GLM_math.h">
+      <Filter>Source files\Old</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Old\Texture.h">
+      <Filter>Source files\Old</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="assimp-vc142-mt.dll">
+      <Filter>Libraries</Filter>
+    </None>
+    <None Include="zlib.dll">
+      <Filter>Libraries</Filter>
+    </None>
+    <None Include="Shaders\Basic_Model.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Combined_Lighting.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Directional_Lighting.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Lighting.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Lightsource.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Point_Lighting.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\Spotlight_Lighting.glsl">
+      <Filter>Source files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{d2672806-a133-416d-a91a-385235655e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{074295b3-c173-40dc-93a3-99288764c9d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Shaders">
+      <UniqueIdentifier>{3a585a81-4bd1-4ff2-9ea4-f323eb234a88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Optional">
+      <UniqueIdentifier>{bf73c339-5347-4a6f-bc33-dd39657d30fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source files\Old">
+      <UniqueIdentifier>{611ed6a1-2cfa-4dfb-8658-e833bec481eb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

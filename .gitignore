@@ -5,7 +5,6 @@
 
 #Visual Studio 2019, unnecessary project files
 *.user
-*.filters
 *.vcxproj.user
 /.vs/
 /bin/Intermediates
