@@ -3,6 +3,15 @@
 #include<vector>
 #include"Renderer.h"
 
+//How to create a layout:
+// VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
+//or:
+// VertexBufferLayout layout;
+// layout.Push<float>(3);
+// layout.Push<float>(3);
+// layout.Push<float>(2);
+
+
 class VertexBufferLayout
 {
 private:
