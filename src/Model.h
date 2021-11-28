@@ -2,8 +2,9 @@
 
 #include<iostream>
 #include<vector>
-#include<list>
 #include<string>
+#include<array>
+#include<cassert>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -12,14 +13,139 @@
 #include <SOIL/SOIL.h> 
 
 #include"Mesh.h"
+#include"Material.h"
 
-#include "Profiler.h"
+#include"Profiler.h"
 
 //Model requirements: each (assimp) Mesh MUST have at least Positions
 
 //TODO: models multiple texture coordinates support
 
-class Model
+class IModel
+{
+protected:
+    IModel() = default;
+
+    IModel(const IModel& copy) = delete;
+
+    virtual void Draw(Shader& shader)
+    {
+        assert(false); //IModel::Draw is not meant to be called
+    }
+private:
+
+};
+
+class SimpleModel : public IModel //code-described model as opposed to file-based model
+{
+public:
+    SimpleModel()
+    {
+        setup();
+    }
+
+    void Draw(Shader& shader) override
+    {
+        shader.Bind();
+        vao.Bind();
+
+        GLCall(glDrawArrays(GL_TRIANGLES, 0, 36)); 
+    }
+
+    //void SetPosition(const glm::vec3& new_position)
+    //{
+    //    position = new_position;
+    //}
+
+    //void SetPosition(glm::vec3&& new_position)
+    //{
+    //    position = new_position;
+    //}
+
+    glm::vec3 GetPosition()
+    {
+        return position;
+    }
+
+    const glm::vec3 GetPosition() const
+    {
+        return position;
+    }
+
+    glm::vec3 position;
+private:
+    void setup() 
+    {
+        vbo.Bind();
+        vbo.SetBufferData();
+
+        vao.AddBuffer(vbo, layout);
+
+        vbo.Unbind();
+        vao.Unbind();
+    }
+
+
+
+    array<float, 288> vertices = {
+        // positions          // normals                // texture coords
+        -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+
+        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
+    };
+    //Material material{ { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f };
+
+    VertexArray vao;
+    VertexBuffer vbo{ vertices.data(), sizeof(vertices) };
+
+    VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
+
+
+
+
+
+
+};
+
+class Model : public IModel
 {
 public:
     Model(std::string path);
@@ -27,7 +153,7 @@ public:
     //copy constructor; at this point it's better to delete it, plus underlying classes are not copyable anyway
     Model(const Model& copy) = delete;
 
-    void Draw(Shader& shader);
+    void Draw(Shader& shader) override;
 
 private:
     std::vector<Mesh> meshes;

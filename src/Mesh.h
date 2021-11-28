@@ -114,15 +114,16 @@ private:
     VertexArray VAO;
     VertexBuffer VBO = { vertices.data(), vertices.size() * sizeof(Vertex) };
     IndexBuffer IBO = { indices.data(), indices.size() };
-    VertexBufferLayout vertex_layout;
+    VertexBufferLayout vertex_layout{3.0f, 3.0f, 2.0f, 3.0f, 3.0f};
 
     void setupMesh()
     {
-        vertex_layout.Push<float>(3);
-        vertex_layout.Push<float>(3);
-        vertex_layout.Push<float>(2);
-        vertex_layout.Push<float>(3);
-        vertex_layout.Push<float>(3);
+        //old way of creating a layout
+        //vertex_layout.Push<float>(3);
+        //vertex_layout.Push<float>(3);
+        //vertex_layout.Push<float>(2);
+        //vertex_layout.Push<float>(3);
+        //vertex_layout.Push<float>(3);
 
         VAO.Bind();
         VAO.AddBuffer(VBO, vertex_layout);

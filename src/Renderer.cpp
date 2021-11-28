@@ -2,8 +2,9 @@
 
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include"Renderer.h"
 #include<iostream>
+
+#include"Renderer.h"
 
 bool keys[]; //forward declaration
 
@@ -49,6 +50,16 @@ void Renderer::DrawArrays(const VertexArray& vao, const Shader& shader, unsigned
 
     GLCall(glDrawArrays(GL_TRIANGLES, 0, vertices)); 
 
+}
+
+void Renderer::SetBackgroundColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha)
+{
+    glClearColor(red, green, blue, alpha);
+}
+
+void Renderer::SetBackgroundColor(ColorRGBA color)
+{
+    glClearColor(color.r, color.g, color.b, color.a);
 }
 
 void Renderer::ToggleWireFrameMode()

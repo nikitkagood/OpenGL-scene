@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include <map>
 #include <functional>
 
 #include "Renderer.h"
@@ -26,6 +27,7 @@
 #include "Light.h"
 #include "Model.h" //icludes: Assimp, SOIL
 
+
 #include "Profiler.h"
 
 //TODO LIST:
@@ -39,7 +41,6 @@ bool keys[1024]; //contains statuses if pressed for all the keys; used to implem
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-//Renderer renderer;
 Window* window = Window::CreateInstance(WIDTH, HEIGHT);
 Camera camera1(*window, keys);
 
@@ -65,54 +66,10 @@ int main()
 
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
-        //for cube model without IBO, each 6 lines means one side of 2 triangles
-        array<float, 288> vertices = {
-            // positions          // normals                // texture coords
-           -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-           -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
-           -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-
-           -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-           -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-           -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-            
-           -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-           -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-           -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-           -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-           -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-           -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            
-            0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            
-           -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-            0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-            0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-           -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
-           -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-            
-           -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-            0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-            0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-           -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
-           -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
-        };
-
-        Model model1("Models/backpack/backpack.obj"); 
+        Model model_backpack("Models/backpack/backpack.obj"); 
         //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f, 0.05f, 0.05f
+        SimpleModel sm_WhiteCube;
+        sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f };
 
         //Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
 
@@ -131,36 +88,42 @@ int main()
         //    light_point_pool.emplace_back(glm::vec3{ 0.2f, 0.2f, 0.2f }, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, pointLightPositions[i]);
         //}
 
-        glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
+        //glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
         //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
+        //Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
+        //Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
 
-        VertexArray vao;
-        VertexBuffer vbo(vertices.data(), sizeof(vertices));
-        vbo.Bind();
-        vbo.SetBufferData();
+        //VertexArray vao;
+        //VertexBuffer vbo(vertices.data(), sizeof(vertices));
+        //vbo.Bind();
+        //vbo.SetBufferData();
 
-        VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
+        //VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
 
-        vao.AddBuffer(vbo, layout);
+        //vao.AddBuffer(vbo, layout);
 
         //2 shaders (vertex and fragment) per file
-        Shader shader_lighting("Shaders/Combined_Lighting.glsl");
+        //Shader shader_lighting("Shaders/Combined_Lighting.glsl");
         Shader shader_basic_model("Shaders/Basic_Model.glsl");
 
-        shader_lighting.Unbind();
+        //shader_lighting.Unbind();
         shader_basic_model.Unbind();
-        vbo.Unbind();
-        vao.Unbind();
+        //vbo.Unbind();
+        //vao.Unbind();
 
-        VertexArray vao_lightsource;
-        vao_lightsource.AddBuffer(vbo, layout);
+        //VertexArray vao_lightsource;
+        //VertexBuffer vbo(vertices.data(), sizeof(vertices));
+        //vbo.Bind();
+        //vbo.SetBufferData();
+
+        VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
+        //vao_lightsource.AddBuffer(vbo, layout);
 
         Shader shader_lightsource("Shaders/Lightsource.glsl");
 
         shader_lightsource.Unbind();
-        vao_lightsource.Unbind();
+        //vbo.Unbind();
+        //vao_lightsource.Unbind();
 
         glEnable(GL_DEPTH_TEST);
 
@@ -184,7 +147,7 @@ int main()
             projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
             //LIGHTING
-            shader_lighting.Bind();
+            //shader_lighting.Bind();
 
             //unsigned idx = 0;
             //for (auto& i : light_point_pool) 
@@ -193,11 +156,11 @@ int main()
             //    idx++;
             //}
 
-            shader_lighting.SetUniformMatrix4fv("view", view);
-            shader_lighting.SetUniformMatrix4fv("projection", projection);
+            //shader_lighting.SetUniformMatrix4fv("view", view);
+            //shader_lighting.SetUniformMatrix4fv("projection", projection);
 
-            material1.Use(shader_lighting);
-            light_spotlight.Use(shader_lighting);
+            //material1.Use(shader_lighting);
+            //light_spotlight.Use(shader_lighting);
 
             //MODELS
             shader_basic_model.Bind();
@@ -205,18 +168,19 @@ int main()
             shader_basic_model.SetUniformMatrix4fv("view", view);
             shader_basic_model.SetUniformMatrix4fv("projection", projection);
 
-            //DRAW CALLS START HERE
-            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //0.2f, 0.3f, 0.3f, 1.0f - dark green-blue color
 
-            glm::mat4 matrix_model1(1.0f);
-            matrix_model1 = glm::translate(matrix_model1, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-            matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.5f));	// for backpack
-                                                                        //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.05f, 0.05f, 0.05f));	// for table
-                                                                        //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.005f, 0.005f, 0.005f));	// for street light
-            shader_basic_model.SetUniformMatrix4fv("model", matrix_model1);
-            model1.Draw(shader_basic_model);
-            //model1.Draw(shader_lighting);
+            //DRAW CALLS AND TRANSFORMATIONS
+            Renderer::SetBackgroundColor(colors[Colors::TURQUOISE]);
+
+            glm::mat4 matrix_model_backpack(1.0f);
+            matrix_model_backpack = glm::translate(matrix_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            matrix_model_backpack = glm::scale(matrix_model_backpack, glm::vec3(0.5f));	// for backpack
+
+            shader_basic_model.SetUniformMatrix4fv("model", matrix_model_backpack);
+            model_backpack.Draw(shader_basic_model);
+            //model_backpack.Draw(shader_lighting);
+
+
 
             //lamp cube
             shader_lightsource.Bind();
@@ -224,36 +188,23 @@ int main()
             shader_lightsource.SetUniformMatrix4fv("projection", projection);
 
             float rotation_radius = 1.5f; 
-            lightPos.x = sin(glfwGetTime()) * rotation_radius;
-            lightPos.z = cos(glfwGetTime()) * rotation_radius;
+            sm_WhiteCube.position.x = sin(glfwGetTime()) * rotation_radius;
+            sm_WhiteCube.position.z = cos(glfwGetTime()) * rotation_radius;
 
-            glm::mat4 model_lamp_cube(1.0f);
-            model_lamp_cube = glm::translate(model_lamp_cube, lightPos);
-            model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-            shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
+            glm::mat4 matrix_lamp_cube(1.0f);
+            matrix_lamp_cube = glm::translate(matrix_lamp_cube, sm_WhiteCube.position);
+            matrix_lamp_cube = glm::scale(matrix_lamp_cube, glm::vec3(0.2f));
+            shader_lightsource.SetUniformMatrix4fv("model", matrix_lamp_cube);
+            sm_WhiteCube.Draw(shader_lightsource);
+            
 
-            Renderer::DrawArrays(vao_lightsource, shader_lightsource, 36);
+            //Renderer::DrawArrays(vao_lightsource, shader_lightsource, 36);
             //vao_lightsource.Unbind();
-
-            //for (size_t i = 0; i < 4; i++)
-            //{
-            //    glm::mat4 model_lamp_cube(1.0f);
-
-            //    model_lamp_cube = glm::translate(model_lamp_cube, pointLightPositions[i]);
-            //    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-            //    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
-
-            //    renderer.DrawArrays(vao, shader_lighting, 36);
-            //}
 
             //vao.Unbind();
 
-
             //Swap front and back buffers
             glfwSwapBuffers(window->Get());
-
-            //Sync with refresh rate
-            //Renderer::VSync(true);
 
             glfwPollEvents();
 

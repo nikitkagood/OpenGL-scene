@@ -82,6 +82,7 @@
     <ClInclude Include="src\Old\Texture.h">
       <Filter>Source files\Old</Filter>
     </ClInclude>
+    <ClInclude Include="src\Color.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
