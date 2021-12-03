@@ -31,6 +31,7 @@
 #include "Profiler.h"
 
 //TODO LIST:
+//Further development of color model
 //Model.cpp:
 // processNode - correct child-parent relations
 // investigate  -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
@@ -52,7 +53,9 @@ int main()
 
     using namespace std;
 
+    //set OpenGL options
     glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEPTH_TEST);
 
     //Set the required callback functions
     window->SetKeyCallback(key_callback);
@@ -67,7 +70,7 @@ int main()
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
         Model model_backpack("Models/backpack/backpack.obj"); 
-        //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f, 0.05f, 0.05f
+        //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f
         SimpleModel sm_WhiteCube;
         sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f };
 
@@ -91,7 +94,7 @@ int main()
         //glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
         //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
         //Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        //Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
+        //Light_Spotlight light_flashlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f); //flashlight
 
         //VertexArray vao;
         //VertexBuffer vbo(vertices.data(), sizeof(vertices));
@@ -125,26 +128,21 @@ int main()
         //vbo.Unbind();
         //vao_lightsource.Unbind();
 
-        glEnable(GL_DEPTH_TEST);
-
+        
         //MAIN GAME LOOP
         while (!glfwWindowShouldClose(window->Get()))
         {
-            //delta time calculation
-            GLdouble currentFrame = glfwGetTime();
-            camera1.deltaTime = currentFrame - camera1.lastFrame;
-            camera1.lastFrame = currentFrame;
-
-            camera1.ProcessKeyboard();
-
-            //clearing buffers for each frame to display things correctly
             Renderer::GLClear();
 
+            camera1.UpdateViewProjection();
+            camera1.CalculateDeltaTime();
+            camera1.ProcessKeyboard();
+
             //CAMERA
-            glm::mat4 view(1.0f);
-            glm::mat4 projection(1.0f);
-            view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
-            projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+            //glm::mat4 view(1.0f);
+            //glm::mat4 projection(1.0f);
+            //camera1.view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
+            //camera1.projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
             //LIGHTING
             //shader_lighting.Bind();
@@ -160,18 +158,18 @@ int main()
             //shader_lighting.SetUniformMatrix4fv("projection", projection);
 
             //material1.Use(shader_lighting);
-            //light_spotlight.Use(shader_lighting);
+            //light_flashlight.Use(shader_basic_model);
 
             //MODELS
             shader_basic_model.Bind();
-
-            shader_basic_model.SetUniformMatrix4fv("view", view);
-            shader_basic_model.SetUniformMatrix4fv("projection", projection);
+            shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
+            shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
 
 
             //DRAW CALLS AND TRANSFORMATIONS
             Renderer::SetBackgroundColor(colors[Colors::TURQUOISE]);
 
+            //backpack
             glm::mat4 matrix_model_backpack(1.0f);
             matrix_model_backpack = glm::translate(matrix_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
             matrix_model_backpack = glm::scale(matrix_model_backpack, glm::vec3(0.5f));	// for backpack
@@ -181,11 +179,10 @@ int main()
             //model_backpack.Draw(shader_lighting);
 
 
-
             //lamp cube
             shader_lightsource.Bind();
-            shader_lightsource.SetUniformMatrix4fv("view", view);
-            shader_lightsource.SetUniformMatrix4fv("projection", projection);
+            shader_lightsource.SetUniformMatrix4fv("view", camera1.view);
+            shader_lightsource.SetUniformMatrix4fv("projection", camera1.projection);
 
             float rotation_radius = 1.5f; 
             sm_WhiteCube.position.x = sin(glfwGetTime()) * rotation_radius;
@@ -197,12 +194,6 @@ int main()
             shader_lightsource.SetUniformMatrix4fv("model", matrix_lamp_cube);
             sm_WhiteCube.Draw(shader_lightsource);
             
-
-            //Renderer::DrawArrays(vao_lightsource, shader_lightsource, 36);
-            //vao_lightsource.Unbind();
-
-            //vao.Unbind();
-
             //Swap front and back buffers
             glfwSwapBuffers(window->Get());
 

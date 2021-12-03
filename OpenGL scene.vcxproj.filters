@@ -92,7 +92,7 @@
     <None Include="Shaders\Combined_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Directional_Lighting.glsl">
+    <None Include="Shaders\old\Directional_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
     <None Include="Shaders\Lighting.glsl">
@@ -101,10 +101,10 @@
     <None Include="Shaders\Lightsource.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Point_Lighting.glsl">
+    <None Include="Shaders\old\Point_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Spotlight_Lighting.glsl">
+    <None Include="Shaders\old\Spotlight_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
   </ItemGroup>

@@ -29,6 +29,7 @@ bool GLLogCall(const char* function, const char* file, int line)
     return true;
 }
 
+//clearing buffers for each frame to display things correctly
 void Renderer::GLClear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

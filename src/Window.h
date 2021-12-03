@@ -26,12 +26,12 @@ public:
 		glfwSetKeyCallback(glfw_window, callback_func);
 	}
 
-	void SetCursorPosCallback(GLFWcursorposfun callback_func)
+	void SetCursorPosCallback(GLFWcursorposfun callback_func) const
 	{
 		glfwSetCursorPosCallback(glfw_window, callback_func);
 	}
 
-	void SetScrollCallback(GLFWscrollfun callback_func)
+	void SetScrollCallback(GLFWscrollfun callback_func) const
 	{
 		glfwSetScrollCallback(glfw_window, callback_func);
 	}

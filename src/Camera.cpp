@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera(Window& window, bool keys_array[]) : current_window(window), keys(keys_array)
+Camera::Camera(const Window& window, bool keys_array[]) : current_window(window), keys(keys_array), view(1.0f), projection(1.0f)
 {
     window.SetCursorPosCallback(mouse_callback);
     window.SetScrollCallback(scroll_callback);
@@ -11,6 +11,12 @@ void Camera::CalculateDeltaTime()
     GLdouble currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
+}
+
+void Camera::UpdateViewProjection()
+{
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    projection = glm::perspective(glm::radians(FOV), static_cast<float>(current_window.WIDTH) / static_cast<float>(current_window.HEIGHT), 0.1f, 100.0f);
 }
 
 void Camera::ProcessKeyboard() //it's NOT a callback, this function just checks keys[]; and keys[] itself is set by callback function in main
