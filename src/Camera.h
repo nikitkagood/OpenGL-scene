@@ -39,7 +39,10 @@ public:
 
     void CalculateDeltaTime();
 
-    void ProcessKeyboard(); //it's NOT a callback, this function just checks keys[]; and keys[] itself is set by callback function in main
+    //it's NOT a callback, this function just checks keys[]
+    // it's implemented this way since callbacks are called only when a key pressed, 
+    // but we need a continious movement and ability to press multiple keys at a time
+    void ProcessKeyboard();
 
     void ProcessMouse(GLFWwindow* window, GLdouble xpos, GLdouble ypos);
 

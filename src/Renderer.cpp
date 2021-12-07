@@ -79,5 +79,5 @@ void Renderer::ToggleWireFrameMode()
 
 void Renderer::VSync(bool value)
 {
-    glfwSwapInterval((int)value);
+    glfwSwapInterval(static_cast<int>(value));
 }

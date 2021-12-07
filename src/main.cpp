@@ -36,6 +36,9 @@
 // processNode - correct child-parent relations
 // investigate  -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
 //VAO, VBO etc - check for excessive of binds/unbinds
+//Integrate std::filesystem?
+//Separate Timer class?
+// timer multithreading?
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
@@ -128,21 +131,15 @@ int main()
         //vbo.Unbind();
         //vao_lightsource.Unbind();
 
-        
         //MAIN GAME LOOP
         while (!glfwWindowShouldClose(window->Get()))
         {
             Renderer::GLClear();
-
-            camera1.UpdateViewProjection();
-            camera1.CalculateDeltaTime();
-            camera1.ProcessKeyboard();
+            Renderer::SetBackgroundColor(colors[Colors::DARK_TURQUOISE]);
 
             //CAMERA
-            //glm::mat4 view(1.0f);
-            //glm::mat4 projection(1.0f);
-            //camera1.view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
-            //camera1.projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+            camera1.UpdateViewProjection();
+            camera1.ProcessKeyboard();
 
             //LIGHTING
             //shader_lighting.Bind();
@@ -167,7 +164,6 @@ int main()
 
 
             //DRAW CALLS AND TRANSFORMATIONS
-            Renderer::SetBackgroundColor(colors[Colors::TURQUOISE]);
 
             //backpack
             glm::mat4 matrix_model_backpack(1.0f);
@@ -175,7 +171,7 @@ int main()
             matrix_model_backpack = glm::scale(matrix_model_backpack, glm::vec3(0.5f));	// for backpack
 
             shader_basic_model.SetUniformMatrix4fv("model", matrix_model_backpack);
-            model_backpack.Draw(shader_basic_model);
+
             //model_backpack.Draw(shader_lighting);
 
 
@@ -192,6 +188,8 @@ int main()
             matrix_lamp_cube = glm::translate(matrix_lamp_cube, sm_WhiteCube.position);
             matrix_lamp_cube = glm::scale(matrix_lamp_cube, glm::vec3(0.2f));
             shader_lightsource.SetUniformMatrix4fv("model", matrix_lamp_cube);
+
+            model_backpack.Draw(shader_basic_model);
             sm_WhiteCube.Draw(shader_lightsource);
             
             //Swap front and back buffers

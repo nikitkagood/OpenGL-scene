@@ -11,6 +11,8 @@ Model::Model(std::string path)
 
 void Model::Draw(Shader& shader)
 {
+    shader.Bind();
+
     for (auto& i : meshes)
     {
         i.Draw_mesh(shader);
@@ -185,15 +187,15 @@ std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTexture
     return textures;
 }
 
-unsigned int Model::textureFromFile(const aiString& path, const std::string& directory)
+unsigned int Model::textureFromFile(const aiString& filename, const std::string& directory)
 {
-    std::string filename = directory + '/' + path.C_Str();
+    std::string full_path = directory + '/' + filename.C_Str();
 
-    unsigned int id = SOIL_load_OGL_texture(filename.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
+    unsigned int id = SOIL_load_OGL_texture(full_path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
 
     if (!id)
     {
-        std::cout << "ERROR::SOIL::Texture failed to load at path: " << filename << std::endl;
+        std::cout << "ERROR::SOIL::Texture failed to load at path: " << full_path << std::endl;
         std::cout << SOIL_last_result() << std::endl;
     }
 

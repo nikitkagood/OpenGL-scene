@@ -13,11 +13,11 @@ struct ColorRGBA
 enum class Colors
 {
     BLACK,
-    TURQUOISE,
+    DARK_TURQUOISE,
 };
 
 static std::map<Colors, ColorRGBA> colors //RGBA
 {
     {Colors::BLACK, ColorRGBA{ 0.0f, 0.0f, 0.0f, 1.0f } },
-    {Colors::TURQUOISE, ColorRGBA{ 0.2f, 0.3f, 0.3f, 1.0f } },
+    {Colors::DARK_TURQUOISE, ColorRGBA{ 0.2f, 0.3f, 0.3f, 1.0f } },
 };

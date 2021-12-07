@@ -85,6 +85,18 @@ private:
         vao.Unbind();
     }
 
+    unsigned int textureFromFile(const std::string& path)
+    {
+        unsigned int id = SOIL_load_OGL_texture(path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
+
+        if (!id)
+        {
+            std::cout << "ERROR::SOIL::Texture failed to load at path: " << path << std::endl;
+            std::cout << SOIL_last_result() << std::endl;
+        }
+
+        return id;
+    }
 
 
     array<float, 288> vertices = {
@@ -137,12 +149,7 @@ private:
     VertexBuffer vbo{ vertices.data(), sizeof(vertices) };
 
     VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
-
-
-
-
-
-
+    std::vector<Mesh_Texture> textures;
 };
 
 class Model : public IModel

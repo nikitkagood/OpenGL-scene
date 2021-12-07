@@ -19,7 +19,7 @@ void Camera::UpdateViewProjection()
     projection = glm::perspective(glm::radians(FOV), static_cast<float>(current_window.WIDTH) / static_cast<float>(current_window.HEIGHT), 0.1f, 100.0f);
 }
 
-void Camera::ProcessKeyboard() //it's NOT a callback, this function just checks keys[]; and keys[] itself is set by callback function in main
+void Camera::ProcessKeyboard() //it's NOT a callback, see .h for additional information
 {
     GLfloat cameraSpeed = camera_speed_multiplier * deltaTime;
     if (keys[GLFW_KEY_W])
