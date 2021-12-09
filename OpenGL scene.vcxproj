@@ -177,10 +177,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\SimpleModel.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <None Include=".gitignore" />
     <None Include="Shaders\Basic_Model.glsl" />
     <None Include="Shaders\Combined_Lighting.glsl" />
+    <None Include="Shaders\old\Directional_Lighting_test.glsl" />
+    <None Include="Shaders\old\Model_Spotlight_Lighting.glsl" />
     <None Include="Shaders\old\Point_Lighting.glsl">
       <FileType>Document</FileType>
     </None>
@@ -202,6 +205,7 @@
   <ItemGroup>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Color.h" />
+    <ClInclude Include="src\IModel.h" />
     <ClInclude Include="src\Old\GLM_math.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Mesh.h" />
@@ -213,7 +217,8 @@
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Settings.h" />
     <ClInclude Include="src\Shader.h" />
-    <ClInclude Include="src\Old\Texture.h" />
+    <ClInclude Include="src\SimpleModel.h" />
+    <ClInclude Include="src\SimpleTexture.h" />
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />

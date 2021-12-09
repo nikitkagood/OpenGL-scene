@@ -160,28 +160,28 @@ std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTexture
     std::vector<Mesh_Texture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
-        aiString str;
-        mat->GetTexture(type, i, &str);
+        aiString path;
+        mat->GetTexture(type, i, &path);
         bool skip = false;
         for (unsigned int j = 0; j < textures_loaded.size(); j++)
         {
             //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
-            if (textures_loaded[j].path == str)
+            if (textures_loaded[j].path == path) //if a texture is already loaded into memory
             {
                 textures.push_back(textures_loaded[j]);
                 skip = true;
                 break;
             }
         }
-        if (!skip) //if texture haven't loaded
+        if (!skip) //load a texture if it hasn't been loaded already
         {
             Mesh_Texture texture;
-            texture.id = textureFromFile(str, directory);
+            texture.id = textureFromFile(path, directory);
             texture.type = typeName;
-            texture.path = str;
+            texture.path = path;
             textures.push_back(texture);
 
-            textures_loaded.push_back(std::move(texture)); //add texture to list of already loaded  textures
+            textures_loaded.push_back(std::move(texture)); //add texture to list of already loaded textures
         }
     }
     return textures;

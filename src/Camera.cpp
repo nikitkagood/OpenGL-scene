@@ -21,6 +21,8 @@ void Camera::UpdateViewProjection()
 
 void Camera::ProcessKeyboard() //it's NOT a callback, see .h for additional information
 {
+    CalculateDeltaTime();
+
     GLfloat cameraSpeed = camera_speed_multiplier * deltaTime;
     if (keys[GLFW_KEY_W])
         cameraPos += cameraFront * cameraSpeed;

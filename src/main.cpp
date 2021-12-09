@@ -26,7 +26,7 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Model.h" //icludes: Assimp, SOIL
-
+#include "SimpleModel.h" 
 
 #include "Profiler.h"
 
@@ -34,11 +34,13 @@
 //Further development of color model
 //Model.cpp:
 // processNode - correct child-parent relations
-// investigate  -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
+// check whether it works correctly or not -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
 //VAO, VBO etc - check for excessive of binds/unbinds
 //Integrate std::filesystem?
 //Separate Timer class?
-// timer multithreading?
+// timer async?
+//Update keyboard input
+//Draw pipeline. Currently it is in a strict order: prerarations, then draw. Setting mat4 model results in everything that uses the same shader transforming to the last model.
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
@@ -69,15 +71,22 @@ int main()
     glViewport(0, 0, vieport_width, vieport_height);
 
     cout << glGetString(GL_VERSION) << endl;
-
+        
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
         Model model_backpack("Models/backpack/backpack.obj"); 
         //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f
         SimpleModel sm_WhiteCube;
-        sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f };
+        sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f }; //y, z, x
+        SimpleModel sm_Box;
+        sm_Box.position = { 1.6f, 0.0f, -2.0f };
+        //SimpleTexture tx_container2 ("Textures/container2.png", sm_TextureType::DIFFUSE);
+        //SimpleTexture tx_container2_specular ("Textures/container2_specular.png", sm_TextureType::SPECULAR);
+        sm_Box.addTexture(SimpleTexture("Textures/container2.png", sm_TextureType::DIFFUSE));
+        sm_Box.addTexture(SimpleTexture("Textures/container2_specular.png", sm_TextureType::SPECULAR));
+        sm_Box.addMaterial(Material{ 32.0f });
 
-        //Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
+        Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
 
         //Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f);
         //glm::vec3 pointLightPositions[] = {
@@ -110,10 +119,13 @@ int main()
 
         //2 shaders (vertex and fragment) per file
         //Shader shader_lighting("Shaders/Combined_Lighting.glsl");
+        Shader shader_lighting("Shaders/old/Directional_Lighting_test.glsl");
         Shader shader_basic_model("Shaders/Basic_Model.glsl");
+        Shader shader_lightsource("Shaders/Lightsource.glsl");
 
         //shader_lighting.Unbind();
-        shader_basic_model.Unbind();
+        //shader_basic_model.Unbind();
+        //shader_lightsource.Unbind();
         //vbo.Unbind();
         //vao.Unbind();
 
@@ -125,9 +137,7 @@ int main()
         VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
         //vao_lightsource.AddBuffer(vbo, layout);
 
-        Shader shader_lightsource("Shaders/Lightsource.glsl");
 
-        shader_lightsource.Unbind();
         //vbo.Unbind();
         //vao_lightsource.Unbind();
 
@@ -165,17 +175,17 @@ int main()
 
             //DRAW CALLS AND TRANSFORMATIONS
 
-            //backpack
-            glm::mat4 matrix_model_backpack(1.0f);
-            matrix_model_backpack = glm::translate(matrix_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-            matrix_model_backpack = glm::scale(matrix_model_backpack, glm::vec3(0.5f));	// for backpack
+            //model_backpack
+            glm::mat4 mat_model_backpack(1.0f);
+            mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));	// for backpack
 
-            shader_basic_model.SetUniformMatrix4fv("model", matrix_model_backpack);
+            shader_basic_model.SetUniformMatrix4fv("model", mat_model_backpack);
 
-            //model_backpack.Draw(shader_lighting);
+            model_backpack.Draw(shader_basic_model);
 
 
-            //lamp cube
+            //sm_WhiteCube
             shader_lightsource.Bind();
             shader_lightsource.SetUniformMatrix4fv("view", camera1.view);
             shader_lightsource.SetUniformMatrix4fv("projection", camera1.projection);
@@ -184,13 +194,41 @@ int main()
             sm_WhiteCube.position.x = sin(glfwGetTime()) * rotation_radius;
             sm_WhiteCube.position.z = cos(glfwGetTime()) * rotation_radius;
 
-            glm::mat4 matrix_lamp_cube(1.0f);
-            matrix_lamp_cube = glm::translate(matrix_lamp_cube, sm_WhiteCube.position);
-            matrix_lamp_cube = glm::scale(matrix_lamp_cube, glm::vec3(0.2f));
-            shader_lightsource.SetUniformMatrix4fv("model", matrix_lamp_cube);
+            glm::mat4 mat_sm_WhieCube(1.0f);
+            mat_sm_WhieCube = glm::translate(mat_sm_WhieCube, sm_WhiteCube.position);
+            mat_sm_WhieCube = glm::scale(mat_sm_WhieCube, glm::vec3(0.2f));
+            shader_lightsource.SetUniformMatrix4fv("model", mat_sm_WhieCube);
 
-            model_backpack.Draw(shader_basic_model);
             sm_WhiteCube.Draw(shader_lightsource);
+
+            //sm_Box
+            //shader_basic_model.Bind();
+            //shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
+            //shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
+
+            //glm::mat4 mat_sm_Box(1.0f);
+            //mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
+            //shader_basic_model.SetUniformMatrix4fv("model", mat_sm_Box);
+
+            //sm_Box.Draw(shader_basic_model);
+
+
+            shader_lighting.Bind();
+            shader_lighting.SetUniformMatrix4fv("view", camera1.view);
+            shader_lighting.SetUniformMatrix4fv("projection", camera1.projection);
+
+            glm::mat4 mat_sm_Box(1.0f);
+            mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
+            shader_lighting.SetUniformMatrix4fv("model", mat_sm_Box);
+
+            light_directional.Use(shader_lighting);
+
+            sm_Box.Draw(shader_lighting);
+
+
+
+
+
             
             //Swap front and back buffers
             glfwSwapBuffers(window->Get());

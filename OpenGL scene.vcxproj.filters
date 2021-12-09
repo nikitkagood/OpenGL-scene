@@ -29,6 +29,7 @@
       <Filter>Source files</Filter>
     </ClCompile>
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\SimpleModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Window.h">
@@ -79,10 +80,12 @@
     <ClInclude Include="src\Old\GLM_math.h">
       <Filter>Source files\Old</Filter>
     </ClInclude>
-    <ClInclude Include="src\Old\Texture.h">
+    <ClInclude Include="src\SimpleTexture.h">
       <Filter>Source files\Old</Filter>
     </ClInclude>
     <ClInclude Include="src\Color.h" />
+    <ClInclude Include="src\IModel.h" />
+    <ClInclude Include="src\SimpleModel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -107,6 +110,8 @@
     <None Include="Shaders\old\Spotlight_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
+    <None Include="Shaders\old\Model_Spotlight_Lighting.glsl" />
+    <None Include="Shaders\old\Directional_Lighting_test.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source files">
