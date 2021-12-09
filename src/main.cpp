@@ -31,16 +31,19 @@
 #include "Profiler.h"
 
 //TODO LIST:
-//Further development of color model
+// FIX THE LIGHTING
 //Model.cpp:
 // processNode - correct child-parent relations
 // check whether it works correctly or not -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
+// 
 //VAO, VBO etc - check for excessive of binds/unbinds
+//Further development of color model
 //Integrate std::filesystem?
 //Separate Timer class?
 // timer async?
 //Update keyboard input
 //Draw pipeline. Currently it is in a strict order: prerarations, then draw. Setting mat4 model results in everything that uses the same shader transforming to the last model.
+
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
@@ -118,8 +121,8 @@ int main()
         //vao.AddBuffer(vbo, layout);
 
         //2 shaders (vertex and fragment) per file
-        //Shader shader_lighting("Shaders/Combined_Lighting.glsl");
-        Shader shader_lighting("Shaders/old/Directional_Lighting_test.glsl");
+        Shader shader_lighting("Shaders/Combined_Lighting.glsl");
+        //Shader shader_lighting("Shaders/old/Directional_Lighting_test.glsl");
         Shader shader_basic_model("Shaders/Basic_Model.glsl");
         Shader shader_lightsource("Shaders/Lightsource.glsl");
 
@@ -202,17 +205,6 @@ int main()
             sm_WhiteCube.Draw(shader_lightsource);
 
             //sm_Box
-            //shader_basic_model.Bind();
-            //shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
-            //shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
-
-            //glm::mat4 mat_sm_Box(1.0f);
-            //mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
-            //shader_basic_model.SetUniformMatrix4fv("model", mat_sm_Box);
-
-            //sm_Box.Draw(shader_basic_model);
-
-
             shader_lighting.Bind();
             shader_lighting.SetUniformMatrix4fv("view", camera1.view);
             shader_lighting.SetUniformMatrix4fv("projection", camera1.projection);

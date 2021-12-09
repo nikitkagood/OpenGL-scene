@@ -79,9 +79,10 @@ struct SpotLight {
     float outerCutOff;
 };
 
+#define NR_POINT_LIGHTS 4
+
 uniform Material material;
 uniform DirectionalLight directional_light;
-#define NR_POINT_LIGHTS 4
 uniform PointLight point_lights[NR_POINT_LIGHTS];
 uniform SpotLight spot_light;
 
@@ -95,6 +96,7 @@ void main()
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
+    //vec3 temp_result;
     //phase 1
     vec3 result = CalcDirectionalLight(directional_light, norm, viewDir);
     //phase 2
@@ -105,11 +107,18 @@ void main()
     //phase 3
     result += CalcSpotLight(spot_light, norm, FragPos, viewDir);    
     
+    //TEST
     color = vec4(result, 1.0);
 }
 
 vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
+    DirectionalLight empty_struct;
+    if(light == empty_struct)
+    {
+        return vec3(0.0, 0.0, 0.0);
+    }
+
     vec3 lightDir = normalize(-light.direction);
     //diffused
     float diff = max(dot(normal, lightDir), 0.0);
@@ -126,6 +135,12 @@ vec3 CalcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
+    PointLight empty_struct;
+    if(light == empty_struct)
+    {
+        return vec3(0.0, 0.0, 0.0);
+    }
+
     vec3 lightDir = normalize(light.position - fragPos);
 
     //diffused
@@ -152,6 +167,12 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
+    SpotLight empty_struct;
+    if(light == empty_struct)
+    {
+        return vec3(0.0, 0.0, 0.0);
+    }
+
     vec3 lightDir = normalize(light.position - fragPos);
 
     //ambient
