@@ -36,6 +36,8 @@ public:
     static void ToggleWireFrameMode();
     static void VSync(bool value);
 
+    static void SetBlending();
+
 private:
     Renderer() = delete;
 

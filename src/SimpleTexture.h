@@ -34,6 +34,8 @@ public:
 		texture_id = textureFromFile(_filepath);
 	}
 
+	~SimpleTexture() = default;
+
 	unsigned int textureFromFile(const std::string& path)
 	{
 		unsigned int id = SOIL_load_OGL_texture(path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
@@ -81,11 +83,12 @@ public:
 	}
 
 	//gl_texture_number - from 0 to 16; it's OpenGL specification - minimal support for 16 textures
-	void Use(int gl_texture_number, unsigned shader_program, std::string shader_texture_name)
+	void Use(int gl_texture_number, Shader& shader, std::string&& shader_texture_name)
 	{
 		GLCall(glActiveTexture(GL_TEXTURE0 + gl_texture_number));
 		GLCall(glBindTexture(GL_TEXTURE_2D, texture_id));
-		GLCall(glUniform1i(glGetUniformLocation(shader_program, shader_texture_name.c_str()), gl_texture_number));
+		//GLCall(glUniform1i(glGetUniformLocation(shader_program, shader_texture_name.c_str()), gl_texture_number));
+		shader.SetUniform1i(shader_texture_name, gl_texture_number);
 	}
 
 	unsigned GetID()

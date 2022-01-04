@@ -10,6 +10,7 @@
 // layout.Push<float>(3);
 // layout.Push<float>(3);
 // layout.Push<float>(2);
+// etc
 
 
 class VertexBufferLayout

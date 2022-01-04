@@ -29,6 +29,8 @@ public:
         setup();
     }
 
+    ~SimpleModel() = default;
+
     void Draw(Shader& shader) override; 
 
     glm::vec3 GetPosition()

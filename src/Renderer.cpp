@@ -81,3 +81,16 @@ void Renderer::VSync(bool value)
 {
     glfwSwapInterval(static_cast<int>(value));
 }
+
+void Renderer::SetBlending()
+{
+    //defaults are:
+    //glBlendFunc(GL_ONE, GL_ZERO);
+    //glBlendEquation(GL_FUNC_ADD);
+    // - no blending, source (all color channels) * ONE + dest * ZERO = source, i.e. source overrides desitnation completely;
+    //source is a new texture, destination - what exists already
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
+}

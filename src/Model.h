@@ -19,23 +19,6 @@
 
 #include"Profiler.h"
 
-
-//class IModel
-//{
-//protected:
-//    IModel() = default;
-//
-//    IModel(const IModel& copy) = delete;
-//
-//    virtual void Draw(Shader& shader)
-//    {
-//        assert(false); //IModel::Draw is not meant to be called
-//    }
-//private:
-//
-//};
-
-
 //Model requirements: each (assimp) Mesh MUST have at least Positions
 //TODO: models multiple texture coordinates support
 
@@ -60,11 +43,12 @@ private:
 
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
-    std::vector<Mesh_Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName); //texture paths are relative to model folder; absolute paths won't work
+    std::vector<Mesh_Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type); //texture paths are relative to model folder; absolute paths won't work
 
     unsigned int textureFromFile(const aiString& path, const std::string& directory);
 
     static void to_glm_vec3(glm::vec3& destination, aiVector3D& mVertices);
     static void to_glm_vec2(glm::vec2& destination, aiVector3D& mVertices);
+
 
 };

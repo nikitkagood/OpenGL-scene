@@ -12,10 +12,10 @@ void SimpleModel::Draw(Shader& shader)
         switch(i.GetType())
         {
         case(sm_TextureType::DIFFUSE):
-            textures[0].Use(0, shader.GetID(), "material.diffuse");
+            textures[0].Use(0, shader, "materials[0].diffuse");
             break;
         case(sm_TextureType::SPECULAR):
-            textures[1].Use(1, shader.GetID(), "material.specular");
+            textures[1].Use(1, shader, "materials[0].specular");
             break;
         default:
             break;
@@ -26,15 +26,11 @@ void SimpleModel::Draw(Shader& shader)
     {
         materials[0].Use(shader);
     }
-    //glActiveTexture(GL_TEXTURE0);
 
-    ////drawing meshes
-    //VAO.Bind();
-    //IBO.Bind();
-
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
-    //VAO.Unbind();
+    if(!textures.empty())
+    {
+        shader.SetUniform1ui("nr_materials", 1);
+    }
 
     GLCall(glDrawArrays(GL_TRIANGLES, 0, 36)); 
 }

@@ -45,29 +45,43 @@ Mesh::~Mesh()
 
 void Mesh::Draw_mesh(Shader& shader)
 {
-    unsigned int diffuseNr = 1;
-    unsigned int specularNr = 1;
-    unsigned int normalNr = 1;
-    unsigned int heightNr = 1;
+    unsigned int nr_diffuse = 0;
+    unsigned int nr_specular = 0;
+    unsigned int nr_normal = 0;
+    unsigned int nr_height = 0;
 
-    for (GLuint i = 0; i < this->textures.size(); i++)
+    for (GLuint i = 0; i < textures.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i);
-
-        std::string name = textures[i].type;
         std::string number;
 
-        if (name == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
-            number = std::to_string(specularNr++); // transfer unsigned int to stream
-        else if (name == "texture_normal")
-            number = std::to_string(normalNr++); // transfer unsigned int to stream
-        else if (name == "texture_height")
-            number = std::to_string(heightNr++); // transfer unsigned int to stream
+        switch(textures[i].type)
+        {
+        case aiTextureType::aiTextureType_DIFFUSE:
+            number = std::to_string(++nr_diffuse);
+            break;
+        case aiTextureType::aiTextureType_SPECULAR:
+            number = std::to_string(++nr_specular);
+            break;
+        case aiTextureType::aiTextureType_NORMALS:
+            continue;
+            //disabled for now
+            //number = std::to_string (++nr_normal);
+            //break;
+        case aiTextureType::aiTextureType_HEIGHT:
+            continue; 
+            //disabled for now
+            //number = std::to_string(++nr_height);
+            //break;
 
-        shader.SetUniform1i((name + number).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, textures[i].id);
+        default:
+            throw std::runtime_error("Mesh::Unexpected texture type");
+            break;
+        }
+
+        //TODO glBindTextureUnit(0, texture0); 
+        glActiveTexture(GL_TEXTURE0 + i);
+        shader.SetUniform1i("materials[" + number + "]." + texture_type_to_string.at(textures[i].type), i);
+        GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
     }
 
     glActiveTexture(GL_TEXTURE0);
@@ -75,6 +89,11 @@ void Mesh::Draw_mesh(Shader& shader)
     //drawing meshes
     VAO.Bind();
     IBO.Bind();
+    
+    //how many materials slots we used
+    unsigned int nr_materials = std::max({ nr_diffuse, nr_specular, nr_normal, nr_height });
+
+    shader.SetUniform1ui("nr_materials", nr_materials);
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -83,13 +102,6 @@ void Mesh::Draw_mesh(Shader& shader)
 
 void Mesh::setupMesh()
 {
-    //old way of creating a layout
-    //vertex_layout.Push<float>(3);
-    //vertex_layout.Push<float>(3);
-    //vertex_layout.Push<float>(2);
-    //vertex_layout.Push<float>(3);
-    //vertex_layout.Push<float>(3);
-
     VAO.Bind();
     VAO.AddBuffer(VBO, vertex_layout);
 

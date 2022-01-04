@@ -98,9 +98,6 @@
     <None Include="Shaders\old\Directional_Lighting.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>
-    <None Include="Shaders\Lighting.glsl">
-      <Filter>Source files\Shaders</Filter>
-    </None>
     <None Include="Shaders\Lightsource.glsl">
       <Filter>Source files\Shaders</Filter>
     </None>

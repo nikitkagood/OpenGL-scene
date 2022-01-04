@@ -34,15 +34,22 @@
 // FIX THE LIGHTING
 //Model.cpp:
 // processNode - correct child-parent relations
-// check whether it works correctly or not -> //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
 // 
 //VAO, VBO etc - check for excessive of binds/unbinds
 //Further development of color model
 //Integrate std::filesystem?
 //Separate Timer class?
 // timer async?
-//Update keyboard input
+//Update keyboard input - current system might not be fully correct
+// bug: multimedia keys cause application to exit
+// 
 //Draw pipeline. Currently it is in a strict order: prerarations, then draw. Setting mat4 model results in everything that uses the same shader transforming to the last model.
+//Everything that is being drawin with a lighting shader requires to have at least 1 directional light - otherwise it will be completely black
+//glBindTextureUnit(0, texture0); //new way of binding textures
+//GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+//
+//Check textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end()) in Model::processMesh
+
 
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
@@ -64,6 +71,10 @@ int main()
     //set OpenGL options
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEPTH_TEST);
+    //blending
+    //glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendEquation(GL_FUNC_ADD);
 
     //Set the required callback functions
     window->SetKeyCallback(key_callback);
@@ -79,8 +90,10 @@ int main()
     {
         Model model_backpack("Models/backpack/backpack.obj"); 
         //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f
+
         SimpleModel sm_WhiteCube;
         sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f }; //y, z, x
+
         SimpleModel sm_Box;
         sm_Box.position = { 1.6f, 0.0f, -2.0f };
         //SimpleTexture tx_container2 ("Textures/container2.png", sm_TextureType::DIFFUSE);
@@ -91,13 +104,8 @@ int main()
 
         Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
 
-        //Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f);
-        //glm::vec3 pointLightPositions[] = {
-        //    glm::vec3(0.7f,  0.2f,  2.0f),
-        //    glm::vec3(2.3f, -3.3f, -4.0f),
-        //    glm::vec3(-4.0f, 2.0f, -12.0f),
-        //    glm::vec3(0.0f,  0.0f, -3.0f)
-        //};
+        Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 1.0f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, sm_WhiteCube.position);
+
 
         //vector<Light_Point> light_point_pool;
         //light_point_pool.reserve(4);
@@ -106,10 +114,7 @@ int main()
         //    light_point_pool.emplace_back(glm::vec3{ 0.2f, 0.2f, 0.2f }, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, pointLightPositions[i]);
         //}
 
-        //glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
-        //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        //Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        //Light_Spotlight light_flashlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f); //flashlight
+        Light_Spotlight light_flashlight({ 0.0f, 0.0f, 0.0f }, { 0.7f, 1.0f, 1.2f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, camera1.cameraPos, camera1.cameraFront, 12.0f, 14.0f);
 
         //VertexArray vao;
         //VertexBuffer vbo(vertices.data(), sizeof(vertices));
@@ -122,8 +127,7 @@ int main()
 
         //2 shaders (vertex and fragment) per file
         Shader shader_lighting("Shaders/Combined_Lighting.glsl");
-        //Shader shader_lighting("Shaders/old/Directional_Lighting_test.glsl");
-        Shader shader_basic_model("Shaders/Basic_Model.glsl");
+        //Shader shader_basic_model("Shaders/Basic_Model.glsl");
         Shader shader_lightsource("Shaders/Lightsource.glsl");
 
         //shader_lighting.Unbind();
@@ -171,22 +175,20 @@ int main()
             //light_flashlight.Use(shader_basic_model);
 
             //MODELS
-            shader_basic_model.Bind();
-            shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
-            shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
-
+            //shader_basic_model.Bind();
+            //shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
+            //shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
 
             //DRAW CALLS AND TRANSFORMATIONS
 
             //model_backpack
-            glm::mat4 mat_model_backpack(1.0f);
-            mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-            mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));	// for backpack
+            //glm::mat4 mat_model_backpack(1.0f);
+            //mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            //mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));	// for backpack
 
-            shader_basic_model.SetUniformMatrix4fv("model", mat_model_backpack);
+            //shader_basic_model.SetUniformMatrix4fv("model", mat_model_backpack);
 
-            model_backpack.Draw(shader_basic_model);
-
+            //model_backpack.Draw(shader_basic_model);
 
             //sm_WhiteCube
             shader_lightsource.Bind();
@@ -209,18 +211,28 @@ int main()
             shader_lighting.SetUniformMatrix4fv("view", camera1.view);
             shader_lighting.SetUniformMatrix4fv("projection", camera1.projection);
 
+            //TEST
+            //shader_lighting.SetUniform1ui("number_of_texture_units", 1);
+
             glm::mat4 mat_sm_Box(1.0f);
             mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
             shader_lighting.SetUniformMatrix4fv("model", mat_sm_Box);
 
-            light_directional.Use(shader_lighting);
-
             sm_Box.Draw(shader_lighting);
 
+            //model_backpack
+            glm::mat4 mat_model_backpack(1.0f);
+            mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));
+
+            shader_lighting.SetUniformMatrix4fv("model", mat_model_backpack);
+
+            light_directional.Use(shader_lighting, 0);
+            light_flashlight.Use(shader_lighting, 1);
+            light_point.Use(shader_lighting, 2);
 
 
-
-
+            model_backpack.Draw(shader_lighting);
             
             //Swap front and back buffers
             glfwSwapBuffers(window->Get());

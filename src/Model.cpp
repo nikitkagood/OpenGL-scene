@@ -69,7 +69,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     indices.reserve(mesh->mNumFaces);
     textures.reserve(3); //there are usually at least 3 textures - diffuse, specular, normal
 
-
     //processing of coordinates, normals and texture coords
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
@@ -139,23 +138,23 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-        std::vector<Mesh_Texture> diffuseMaps = std::move(loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse"));
+        std::vector<Mesh_Texture> diffuseMaps = std::move(loadMaterialTextures(material, aiTextureType_DIFFUSE));
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-        std::vector<Mesh_Texture> specularMaps = std::move(loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular"));
+        std::vector<Mesh_Texture> specularMaps = std::move(loadMaterialTextures(material, aiTextureType_SPECULAR));
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-        std::vector<Mesh_Texture> normalMaps = std::move(loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal"));
+        std::vector<Mesh_Texture> normalMaps = std::move(loadMaterialTextures(material, aiTextureType_HEIGHT));
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-        std::vector<Mesh_Texture> heightMaps = std::move(loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height"));
+        std::vector<Mesh_Texture> heightMaps = std::move(loadMaterialTextures(material, aiTextureType_AMBIENT));
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
     }
 
     return { vertices, indices, textures };
 }
 
-std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) //texture paths are relative to model folder; absolute paths won't work
+std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type) //texture paths are relative to model folder; absolute paths won't work
 {
     std::vector<Mesh_Texture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -165,7 +164,6 @@ std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTexture
         bool skip = false;
         for (unsigned int j = 0; j < textures_loaded.size(); j++)
         {
-            //if (std::strcmp(textures_loaded[j].path.C_Str(), str.C_Str()) == 0)
             if (textures_loaded[j].path == path) //if a texture is already loaded into memory
             {
                 textures.push_back(textures_loaded[j]);
@@ -177,7 +175,7 @@ std::vector<Mesh_Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTexture
         {
             Mesh_Texture texture;
             texture.id = textureFromFile(path, directory);
-            texture.type = typeName;
+            texture.type = type;
             texture.path = path;
             textures.push_back(texture);
 
@@ -191,6 +189,7 @@ unsigned int Model::textureFromFile(const aiString& filename, const std::string&
 {
     std::string full_path = directory + '/' + filename.C_Str();
 
+    //glTexParameteri calls are handled by SOIL_load_OGL_texture
     unsigned int id = SOIL_load_OGL_texture(full_path.c_str(), 0, 0, SOIL_FLAG_INVERT_Y);
 
     if (!id)

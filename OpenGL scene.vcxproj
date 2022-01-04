@@ -198,7 +198,6 @@
     <None Include="Shaders\old\Spotlight_Lighting.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Lighting.glsl" />
     <None Include="Shaders\Lightsource.glsl" />
     <None Include="Shaders\old\Directional_Lighting.glsl" />
   </ItemGroup>
