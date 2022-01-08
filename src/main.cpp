@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include <map>
 #include <functional>
 
 #include "Renderer.h"
@@ -25,250 +26,143 @@
 #include "Shader.h"
 #include "Light.h"
 #include "Model.h" //icludes: Assimp, SOIL
+#include "SimpleModel.h" 
 
 #include "Profiler.h"
+
+//TODO LIST:
+// FIX THE LIGHTING
+//Model.cpp:
+// processNode - correct child-parent relations
+// 
+//VAO, VBO etc - check for excessive of binds/unbinds
+//Further development of color model
+//Integrate std::filesystem?
+//Separate Timer class?
+// timer async?
+//Update keyboard input - current system might not be fully correct
+// bug: multimedia keys cause application to exit
+// 
+//Draw pipeline. Currently it is in a strict order: prerarations, then draw. Setting mat4 model results in everything that uses the same shader transforming to the last model.
+//Everything that is being drawin with a lighting shader requires to have at least 1 directional light - otherwise it will be completely black
+//glBindTextureUnit(0, texture0); //new way of binding textures
+//GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
+//
+//Check textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end()) in Model::processMesh
+
+
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
 bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-Renderer renderer;
-
-Window window(WIDTH, HEIGHT); 
-Camera camera1(window, keys);
+Window* window = Window::CreateInstance(WIDTH, HEIGHT);
+Camera camera1(*window, keys);
 
 int main()
 {
 #ifdef BENCHMARK_MODE_ON
-    LOG_DURATION("BENCHMARK: main, 1 game cycle iteration");
+    LOG_DURATION("BENCHMARK: main, 1 game loop iteration");
 #endif // BENCHMARK_MODE_ON
 
     using namespace std;
 
+    //set OpenGL options
     glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEPTH_TEST);
+    Renderer::SetBlending();
 
     //Set the required callback functions
-    window.SetKeyCallback(key_callback);
+    window->SetKeyCallback(key_callback);
 
     //Define the viewport dimensions
     int vieport_width, vieport_height;
-    glfwGetFramebufferSize(window.Get(), &vieport_width, &vieport_height);
+    glfwGetFramebufferSize(window->Get(), &vieport_width, &vieport_height);
     glViewport(0, 0, vieport_width, vieport_height);
 
     cout << glGetString(GL_VERSION) << endl;
-
+        
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
-        //for cube model without IBO, each 6 lines means one side of 2 triangles
-        array<float, 288> vertices = {
-            // positions          // normals                // texture coords
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-                                                           
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-                                                           
-            -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-                                                           
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
-        };
+        Model model_backpack("Models/backpack/backpack.obj"); 
+        //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f
 
-        Model model1("Models/backpack/backpack.obj"); 
-        //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f, 0.05f, 0.05f
+        SimpleModel sm_WhiteCube;
+        sm_WhiteCube.position = { 0.7f, 0.3f, 3.0f }; //y, z, x
 
-        //Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
+        SimpleModel sm_Box;
+        sm_Box.position = { 1.6f, 0.0f, -2.0f };
+        sm_Box.addTexture(SimpleTexture("Textures/container2.png", sm_TextureType::DIFFUSE));
+        sm_Box.addTexture(SimpleTexture("Textures/container2_specular.png", sm_TextureType::SPECULAR));
+        sm_Box.addMaterial(Material{ 32.0f });
 
-        //Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f);
-        //glm::vec3 pointLightPositions[] = {
-        //    glm::vec3(0.7f,  0.2f,  2.0f),
-        //    glm::vec3(2.3f, -3.3f, -4.0f),
-        //    glm::vec3(-4.0f, 2.0f, -12.0f),
-        //    glm::vec3(0.0f,  0.0f, -3.0f)
-        //};
+        Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
+        Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 1.0f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, sm_WhiteCube.position);
+        Light_Spotlight light_flashlight({ 0.0f, 0.0f, 0.0f }, { 0.7f, 1.0f, 1.2f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, camera1.cameraPos, camera1.cameraFront, 12.0f, 14.0f);
 
-        //vector<Light_Point> light_point_pool;
-        //light_point_pool.reserve(4);
-        //for (size_t i = 0; i < 4; i++)
-        //{
-        //    light_point_pool.emplace_back(glm::vec3{ 0.2f, 0.2f, 0.2f }, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, pointLightPositions[i]);
-        //}
-
-        glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
-        //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
-
-        //for IBO/EBO
-        //2 triangles -> square (that looks like rectangle)
-        //array<unsigned, 6> indices =
-        //{
-        //    0, 1, 2,
-        //    2, 3, 0
-        //};
-
-        VertexArray vao;
-        VertexBuffer vbo(vertices.data(), sizeof(vertices));
-        vbo.Bind();
-        vbo.SetBufferData();
-
-        VertexBufferLayout layout;
-        layout.Push<float>(3);
-        layout.Push<float>(3);
-        layout.Push<float>(2);
-
-        vao.AddBuffer(vbo, layout);
-
-        //IndexBuffer ibo(indices.data(), indices.size());
-
-        //2 shaders (vertex and fragment) per file
         Shader shader_lighting("Shaders/Combined_Lighting.glsl");
-        Shader shader_basic_model("Shaders/Basic_Model.glsl");
-
-        shader_lighting.Unbind();
-        shader_basic_model.Unbind();
-        vbo.Unbind();
-        vao.Unbind();
-
-
-        VertexArray vao_lightsource;
-        vao_lightsource.AddBuffer(vbo, layout);
-
+        //Shader shader_basic_model("Shaders/Basic_Model.glsl");
         Shader shader_lightsource("Shaders/Lightsource.glsl");
 
-        shader_lightsource.Unbind();
-        vao_lightsource.Unbind();
+        //MAIN GAME LOOP
+        while (!glfwWindowShouldClose(window->Get()))
+        {
+            Renderer::GLClear();
+            Renderer::SetBackgroundColor(colors[Colors::DARK_TURQUOISE]);
 
-        glEnable(GL_DEPTH_TEST);
+            //CAMERA
+            camera1.UpdateViewProjection();
+            camera1.ProcessKeyboard();
 
-while (!glfwWindowShouldClose(window.Get()))
-{
-    //delta time calculation
-    GLdouble currentFrame = glfwGetTime();
-    camera1.deltaTime = currentFrame - camera1.lastFrame;
-    camera1.lastFrame = currentFrame;
+            //sm_WhiteCube
+            shader_lightsource.Bind();
+            shader_lightsource.SetUniformMatrix4fv("view", camera1.view);
+            shader_lightsource.SetUniformMatrix4fv("projection", camera1.projection);
 
-    camera1.ProcessKeyboard();
+            float rotation_radius = 1.5f; 
+            sm_WhiteCube.position.x = sin(glfwGetTime()) * rotation_radius;
+            sm_WhiteCube.position.z = cos(glfwGetTime()) * rotation_radius;
 
-    //clearing buffers for each frame to display things correctly
-    renderer.GLClear();
+            glm::mat4 mat_sm_WhieCube(1.0f);
+            mat_sm_WhieCube = glm::translate(mat_sm_WhieCube, sm_WhiteCube.position);
+            mat_sm_WhieCube = glm::scale(mat_sm_WhieCube, glm::vec3(0.2f));
+            shader_lightsource.SetUniformMatrix4fv("model", mat_sm_WhieCube);
 
-    //CAMERA
-    glm::mat4 view(1.0f);
-    glm::mat4 projection(1.0f);
-    view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
-    projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+            sm_WhiteCube.Draw(shader_lightsource);
 
-     //LIGHTING
-    shader_lighting.Bind();
+            //sm_Box
+            shader_lighting.Bind();
+            shader_lighting.SetUniformMatrix4fv("view", camera1.view);
+            shader_lighting.SetUniformMatrix4fv("projection", camera1.projection);
 
-    //unsigned idx = 0;
-    //for (auto& i : light_point_pool) 
-    //{
-    //    i.UseMany(shader, idx);
-    //    idx++;
-    //}
+            glm::mat4 mat_sm_Box(1.0f);
+            mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
+            shader_lighting.SetUniformMatrix4fv("model", mat_sm_Box);
 
-    shader_lighting.SetUniformMatrix4fv("view", view);
-    shader_lighting.SetUniformMatrix4fv("projection", projection);
+            sm_Box.Draw(shader_lighting);
 
-    material1.Use(shader_lighting);
-    light_spotlight.Use(shader_lighting);
+            //model_backpack
+            glm::mat4 mat_model_backpack(1.0f);
+            mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+            mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));
 
-    //MODELS
-    shader_basic_model.Bind();
+            shader_lighting.SetUniformMatrix4fv("model", mat_model_backpack);
 
-    shader_basic_model.SetUniformMatrix4fv("view", view);
-    shader_basic_model.SetUniformMatrix4fv("projection", projection);
+            light_directional.Use(shader_lighting, 0);
+            light_flashlight.Use(shader_lighting, 1);
+            light_point.Use(shader_lighting, 2);
 
-    //DRAW CALLS START HERE
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //0.2f, 0.3f, 0.3f, 1.0f - dark green-blue color
-
-    glm::mat4 matrix_model1(1.0f);
-    matrix_model1 = glm::translate(matrix_model1, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.5f));	// for backpack
-    //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.05f, 0.05f, 0.05f));	// for table
-    //matrix_model1 = glm::scale(matrix_model1, glm::vec3(0.005f, 0.005f, 0.005f));	// for street light
-    shader_basic_model.SetUniformMatrix4fv("model", matrix_model1);
-    model1.Draw(shader_basic_model);
-    //model1.Draw(shader_lighting);
-
-    //lamp cube
-    shader_lightsource.Bind();
-    shader_lightsource.SetUniformMatrix4fv("view", view);
-    shader_lightsource.SetUniformMatrix4fv("projection", projection);
-
-    float rotation_radius = 1.5f; 
-    lightPos.x = sin(glfwGetTime()) * rotation_radius;
-    lightPos.z = cos(glfwGetTime()) * rotation_radius;
-
-    glm::mat4 model_lamp_cube(1.0f);
-    model_lamp_cube = glm::translate(model_lamp_cube, lightPos);
-    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
-
-    renderer.DrawArrays(vao_lightsource, shader_lightsource, 36);
-    //vao_lightsource.Unbind();
-    
-    //for (size_t i = 0; i < 4; i++)
-    //{
-    //    glm::mat4 model_lamp_cube(1.0f);
-
-    //    model_lamp_cube = glm::translate(model_lamp_cube, pointLightPositions[i]);
-    //    model_lamp_cube = glm::scale(model_lamp_cube, glm::vec3(0.2f));
-    //    shader_lightsource.SetUniformMatrix4fv("model", model_lamp_cube);
-
-    //    renderer.DrawArrays(vao, shader_lighting, 36);
-    //}
-
-    //vao.Unbind();
-
-
-    //Swap front and back buffers
-    glfwSwapBuffers(window.Get());
-
-    //Sync with refresh rate
-    //Renderer::VSync(true);
-
-    glfwPollEvents();
+            model_backpack.Draw(shader_lighting);
+            
+            //Swap front and back buffers
+            glfwSwapBuffers(window->Get());
+            glfwPollEvents();
 
 #ifdef BENCHMARK_MODE_ON
-    break;
+            break;
 #endif // BENCHMARK_MODE_ON
-}
+        }
 
     }
     glfwTerminate();

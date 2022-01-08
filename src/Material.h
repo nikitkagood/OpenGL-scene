@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include "Shader.h"
 
 class Material
@@ -25,7 +26,7 @@ public:
         //shader.SetUniform3f("material.ambient", ambient.r, ambient.g, ambient.b); //we don't really need material.ambient lighting - it's the same as scene ambient lighting
         //shader.SetUniform3f("material.diffuse", diffuse.r, diffuse.g, diffuse.b); //Sampler2D now (i.e texture)
         //shader.SetUniform3f("material.specular", specular.r, specular.g, specular.b); //Sampler2D now (i.e texture)
-        shader.SetUniform1f("material.shininess", shininess);
+        shader.SetUniform1f("materials[0].shininess", shininess);
     }
 };
 

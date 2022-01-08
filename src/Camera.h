@@ -12,6 +12,9 @@ void scroll_callback(GLFWwindow* window, GLdouble xoffset, GLdouble yoffset);
 class Camera
 {
 public:
+    glm::mat4 view;
+    glm::mat4 projection;
+
     GLdouble deltaTime = 0.0; //time elapsed between the last and the current frame
     GLdouble lastFrame = 0.0;
 
@@ -25,16 +28,21 @@ public:
     GLdouble camera_speed_multiplier = 5.0;
     GLdouble camera_sensitivity_multiplier = 0.1;
 
-    Camera(Window& window, bool keys_array[]);
+    Camera(const Window& window, bool keys_array[]);
 
     glm::mat4 GetViewMatrix()
     {
         return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     }
 
+    void UpdateViewProjection();
+
     void CalculateDeltaTime();
 
-    void ProcessKeyboard(); //it's NOT a callback, this function just checks keys[]; and keys[] itself is set by callback function in main
+    //it's NOT a callback, this function just checks keys[]
+    // it's implemented this way since callbacks are called only when a key pressed, 
+    // but we need a continious movement and ability to press multiple keys at a time
+    void ProcessKeyboard();
 
     void ProcessMouse(GLFWwindow* window, GLdouble xpos, GLdouble ypos);
 
@@ -42,7 +50,7 @@ public:
 private:
     bool* keys; //contains states for all keys; must be declared outside; used to track if a key is pressed so multiple keys can be tracked at the same time
 
-    Window& current_window;
+    const Window& current_window;
 
     //last mouse coordinates, initialized with sceen center coordinates
     GLdouble lastX = current_window.WIDTH / 2.0;

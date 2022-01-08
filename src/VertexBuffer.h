@@ -4,6 +4,19 @@
 
 #include <stdint.h>
 
+//VBOs are used to cut off multiple use of the same verticies in one object
+//
+
+//VBO example:
+// 
+//2 triangles -> square (that looks like rectangle though, unless proper transformations applied)
+//array<unsigned, 6> indices =
+//{
+//    0, 1, 2,
+//    2, 3, 0
+//};
+//IndexBuffer ibo(indices.data(), indices.size());
+
 class VertexBuffer
 {
 private:

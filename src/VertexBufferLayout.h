@@ -3,6 +3,16 @@
 #include<vector>
 #include"Renderer.h"
 
+//How to create a layout:
+// VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
+//or:
+// VertexBufferLayout layout;
+// layout.Push<float>(3);
+// layout.Push<float>(3);
+// layout.Push<float>(2);
+// etc
+
+
 class VertexBufferLayout
 {
 private:
@@ -21,6 +31,19 @@ public:
 #ifdef DEBUG_MODE_ON
 		std::cerr << "VB Layout constructor" << std::endl;
 #endif // DEBUG_MODE_ON
+	}
+
+	template<typename T>
+	VertexBufferLayout(std::initializer_list<T> init_list) 
+	{
+#ifdef DEBUG_MODE_ON
+		std::cerr << "VB Layout constructor(initializer_list)" << std::endl;
+#endif // DEBUG_MODE_ON
+
+		for(auto& i : init_list)
+		{
+			Push<T>(i);
+		}
 	}
 
 #ifdef COPY_CONSTRUCTORS_ON

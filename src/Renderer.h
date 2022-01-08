@@ -1,11 +1,13 @@
 #pragma once
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include"Color.h"
 #include"VertexArray.h"
 #include"IndexBuffer.h"
 #include"Shader.h"
+
+
 
 //MSVC specific
 #define ASSERT(x) if (!(x)) __debugbreak();
@@ -22,14 +24,22 @@ bool GLLogCall(const char* function, const char* file, int line);
 
 class Renderer
 {
-private:
-    static bool wire_frame_mode;
 public:
-    void GLClear() const;
+    static void GLClear();
 
-    void DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader) const;
-    void DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices) const;
+    static void DrawElements(const VertexArray& vao, const IndexBuffer& ibo, const Shader& shader);
+    static void DrawArrays(const VertexArray& vao, const Shader& shader, unsigned vertices);
+
+    static void SetBackgroundColor(GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+    static void SetBackgroundColor(ColorRGBA color);
 
     static void ToggleWireFrameMode();
     static void VSync(bool value);
+
+    static void SetBlending();
+
+private:
+    Renderer() = delete;
+
+    static bool wire_frame_mode;
 };

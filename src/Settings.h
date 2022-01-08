@@ -7,12 +7,11 @@
 
 #define GLEW_STATIC
 
-
 //profiler options
 //#define BENCHMARK_MODE_ON
 
-//if defined, there will be an exeption thrown
-#define EXCEPTION_MODEL_FAILED_TO_LOAD
+//if defined, there will be an exeption thrown when model fails to load
+#define EXCEPTION_MODEL_FAILED_TO_LOAD 
 
 //debug options; 
 //console output
