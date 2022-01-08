@@ -4,19 +4,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//#include <SOIL/SOIL.h> //Simple OpenGL Image Library; included in Model
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+//#include <assimp/Importer.hpp>
+//#include <assimp/scene.h>
+//#include <assimp/postprocess.h>
 
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <array>
-#include <functional>
 
 #include "Renderer.h"
-#include "Window.h"
-#include "Camera.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
@@ -24,19 +27,18 @@
 #include "Material.h"
 #include "Shader.h"
 #include "Light.h"
-#include "Model.h" //icludes: Assimp, SOIL
+#include "Window.h"
+#include "Model.h" //Icludes: Assimp, SOIL
 
 #include "Profiler.h"
 
 const GLuint WIDTH = 1280, HEIGHT = 720;
-bool keys[1024]; //contains statuses if pressed for all the keys; used to implement multiple keys input 
+bool keys[1024];
 
+#include "Camera.h"
+
+//not just camera
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-
-Renderer renderer;
-
-Window window(WIDTH, HEIGHT); 
-Camera camera1(window, keys);
 
 int main()
 {
@@ -48,8 +50,14 @@ int main()
 
     glEnable(GL_DEBUG_OUTPUT);
 
+    Renderer renderer;
+
+    Window window(WIDTH, HEIGHT, 4);
+
     //Set the required callback functions
     window.SetKeyCallback(key_callback);
+    window.SetCursorPosCallback(mouse_callback);
+    window.SetScrollCallback(scroll_callback);
 
     //Define the viewport dimensions
     int vieport_width, vieport_height;
@@ -60,54 +68,56 @@ int main()
 
     //another scope to make glfwTerminate work correclty and not throwing an error when GL window is closed
     {
-        //for cube model without IBO, each 6 lines means one side of 2 triangles
         array<float, 288> vertices = {
-            // positions          // normals                // texture coords
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
-                                                           
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f,    0.0f, 0.0f,
-                                                           
-            -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f,    1.0f, 0.0f,
-                                                           
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f,    0.0f, 1.0f,
-                                                           
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f,    0.0f, 1.0f
+            // positions          // normals           // texture coords
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
         };
 
         Model model1("Models/backpack/backpack.obj"); 
         //Model model1("Models/table/table.obj"); //must be scaled down at least to 0.05f, 0.05f, 0.05f
+        //Model model1("Models/table2/table.fbx");
+        //Model model1("Models/street_lamp/Street_Lamp.obj");
+        //Model model1("Models/tree1_3ds/Tree1.3ds");
 
         //Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
 
@@ -129,7 +139,7 @@ int main()
         glm::vec3 lightPos(0.7f, 0.3f, 3.0f);
         //Material material1({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
         Material material1({ 1.0f, 0.5f, 0.31f }, { 0.5f, 0.5f, 0.5f }, 32.0f);
-        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, camera1.cameraFront, 12.0f, 14.0f);
+        Light_Spotlight light_spotlight({ 0.0f, 0.0f, 0.0f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, lightPos, cameraFront, 12.0f, 14.0f);
 
         //for IBO/EBO
         //2 triangles -> square (that looks like rectangle)
@@ -171,16 +181,18 @@ int main()
         shader_lightsource.Unbind();
         vao_lightsource.Unbind();
 
+
+
         glEnable(GL_DEPTH_TEST);
 
 while (!glfwWindowShouldClose(window.Get()))
 {
     //delta time calculation
     GLdouble currentFrame = glfwGetTime();
-    camera1.deltaTime = currentFrame - camera1.lastFrame;
-    camera1.lastFrame = currentFrame;
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
 
-    camera1.ProcessKeyboard();
+    camera_movement();
 
     //clearing buffers for each frame to display things correctly
     renderer.GLClear();
@@ -188,14 +200,14 @@ while (!glfwWindowShouldClose(window.Get()))
     //CAMERA
     glm::mat4 view(1.0f);
     glm::mat4 projection(1.0f);
-    view = glm::lookAt(camera1.cameraPos, camera1.cameraPos + camera1.cameraFront, camera1.cameraUp);
-    projection = glm::perspective(glm::radians(camera1.FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    projection = glm::perspective(glm::radians(FOV), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
      //LIGHTING
     shader_lighting.Bind();
 
     //unsigned idx = 0;
-    //for (auto& i : light_point_pool) 
+    //for (auto& i : light_point_pool) //range-based for (iterator-based loop) is for optimization purposes
     //{
     //    i.UseMany(shader, idx);
     //    idx++;
@@ -276,26 +288,18 @@ while (!glfwWindowShouldClose(window.Get()))
     return 0;
 }
 
-void mouse_callback(GLFWwindow* window, GLdouble xpos, GLdouble ypos)
-{
-    camera1.ProcessMouse(window, xpos, ypos);
-}
-void scroll_callback(GLFWwindow* window, GLdouble xoffset, GLdouble yoffset)
-{
-    camera1.ProcessMouseScroll(window, xoffset, yoffset);
-}
-
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
+    //keys that don't belong to camera movement
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    if (key == GLFW_KEY_F && action == GLFW_PRESS)
+        //renderer.ToggleWireFrameMode();
+        Renderer::ToggleWireFrameMode();
+
     //for multiple keys pressed at the same time
     if (action == GLFW_PRESS)
         keys[key] = true;
     else if (action == GLFW_RELEASE)
         keys[key] = false;
-
-    if (keys[GLFW_KEY_ESCAPE])
-        glfwSetWindowShouldClose(window, GL_TRUE);
-    if (keys[GLFW_KEY_F])
-        Renderer::ToggleWireFrameMode();
-
 }
