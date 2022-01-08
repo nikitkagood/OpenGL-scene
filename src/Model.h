@@ -11,6 +11,8 @@
 #include <assimp/postprocess.h>
 
 #include <SOIL/SOIL.h> 
+//#define STB_IMAGE_IMPLEMENTATION
+//#include "stb_image.h"
 
 #include "IModel.h"
 
