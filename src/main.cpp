@@ -71,10 +71,7 @@ int main()
     //set OpenGL options
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEPTH_TEST);
-    //blending
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBlendEquation(GL_FUNC_ADD);
+    Renderer::SetBlending();
 
     //Set the required callback functions
     window->SetKeyCallback(key_callback);
@@ -96,57 +93,17 @@ int main()
 
         SimpleModel sm_Box;
         sm_Box.position = { 1.6f, 0.0f, -2.0f };
-        //SimpleTexture tx_container2 ("Textures/container2.png", sm_TextureType::DIFFUSE);
-        //SimpleTexture tx_container2_specular ("Textures/container2_specular.png", sm_TextureType::SPECULAR);
         sm_Box.addTexture(SimpleTexture("Textures/container2.png", sm_TextureType::DIFFUSE));
         sm_Box.addTexture(SimpleTexture("Textures/container2_specular.png", sm_TextureType::SPECULAR));
         sm_Box.addMaterial(Material{ 32.0f });
 
         Light_Directional light_directional ({ 0.2f, 0.2f, 0.2f }, { 0.5f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { -0.2f, -1.0f, -0.3f });
-
         Light_Point light_point({ 0.2f, 0.2f, 0.2f }, { 1.0f, 0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, sm_WhiteCube.position);
-
-
-        //vector<Light_Point> light_point_pool;
-        //light_point_pool.reserve(4);
-        //for (size_t i = 0; i < 4; i++)
-        //{
-        //    light_point_pool.emplace_back(glm::vec3{ 0.2f, 0.2f, 0.2f }, glm::vec3{ 0.5f, 0.5f, 0.5f }, glm::vec3{ 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, pointLightPositions[i]);
-        //}
-
         Light_Spotlight light_flashlight({ 0.0f, 0.0f, 0.0f }, { 0.7f, 1.0f, 1.2f }, { 1.0f, 1.0f, 1.0f }, 0.09f, 0.032f, camera1.cameraPos, camera1.cameraFront, 12.0f, 14.0f);
 
-        //VertexArray vao;
-        //VertexBuffer vbo(vertices.data(), sizeof(vertices));
-        //vbo.Bind();
-        //vbo.SetBufferData();
-
-        //VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
-
-        //vao.AddBuffer(vbo, layout);
-
-        //2 shaders (vertex and fragment) per file
         Shader shader_lighting("Shaders/Combined_Lighting.glsl");
         //Shader shader_basic_model("Shaders/Basic_Model.glsl");
         Shader shader_lightsource("Shaders/Lightsource.glsl");
-
-        //shader_lighting.Unbind();
-        //shader_basic_model.Unbind();
-        //shader_lightsource.Unbind();
-        //vbo.Unbind();
-        //vao.Unbind();
-
-        //VertexArray vao_lightsource;
-        //VertexBuffer vbo(vertices.data(), sizeof(vertices));
-        //vbo.Bind();
-        //vbo.SetBufferData();
-
-        VertexBufferLayout layout{ 3.0f, 3.0f, 2.0f };
-        //vao_lightsource.AddBuffer(vbo, layout);
-
-
-        //vbo.Unbind();
-        //vao_lightsource.Unbind();
 
         //MAIN GAME LOOP
         while (!glfwWindowShouldClose(window->Get()))
@@ -157,38 +114,6 @@ int main()
             //CAMERA
             camera1.UpdateViewProjection();
             camera1.ProcessKeyboard();
-
-            //LIGHTING
-            //shader_lighting.Bind();
-
-            //unsigned idx = 0;
-            //for (auto& i : light_point_pool) 
-            //{
-            //    i.UseMany(shader, idx);
-            //    idx++;
-            //}
-
-            //shader_lighting.SetUniformMatrix4fv("view", view);
-            //shader_lighting.SetUniformMatrix4fv("projection", projection);
-
-            //material1.Use(shader_lighting);
-            //light_flashlight.Use(shader_basic_model);
-
-            //MODELS
-            //shader_basic_model.Bind();
-            //shader_basic_model.SetUniformMatrix4fv("view", camera1.view);
-            //shader_basic_model.SetUniformMatrix4fv("projection", camera1.projection);
-
-            //DRAW CALLS AND TRANSFORMATIONS
-
-            //model_backpack
-            //glm::mat4 mat_model_backpack(1.0f);
-            //mat_model_backpack = glm::translate(mat_model_backpack, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-            //mat_model_backpack = glm::scale(mat_model_backpack, glm::vec3(0.5f));	// for backpack
-
-            //shader_basic_model.SetUniformMatrix4fv("model", mat_model_backpack);
-
-            //model_backpack.Draw(shader_basic_model);
 
             //sm_WhiteCube
             shader_lightsource.Bind();
@@ -211,9 +136,6 @@ int main()
             shader_lighting.SetUniformMatrix4fv("view", camera1.view);
             shader_lighting.SetUniformMatrix4fv("projection", camera1.projection);
 
-            //TEST
-            //shader_lighting.SetUniform1ui("number_of_texture_units", 1);
-
             glm::mat4 mat_sm_Box(1.0f);
             mat_sm_Box = glm::translate(mat_sm_Box, sm_Box.position);
             shader_lighting.SetUniformMatrix4fv("model", mat_sm_Box);
@@ -231,12 +153,10 @@ int main()
             light_flashlight.Use(shader_lighting, 1);
             light_point.Use(shader_lighting, 2);
 
-
             model_backpack.Draw(shader_lighting);
             
             //Swap front and back buffers
             glfwSwapBuffers(window->Get());
-
             glfwPollEvents();
 
 #ifdef BENCHMARK_MODE_ON
